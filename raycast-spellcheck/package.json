@@ -25,6 +25,14 @@
       "type": "textfield",
       "required": true,
       "default": ""
+    },
+    {
+      "name": "lang",
+      "label": "Language",
+      "description": "locale code for the language you want to check the spelling for",
+      "type": "textfield",
+      "required": true,
+      "default": "en_GB"
     }
   ],
   "dependencies": {

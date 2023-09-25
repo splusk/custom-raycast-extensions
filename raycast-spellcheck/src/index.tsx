@@ -4,6 +4,7 @@ import axios from 'axios';
 
 const preferences: {
   xRapidApiKey: string;
+  lang: string;
 } = getPreferenceValues();
 
 export default function Command() {
@@ -23,7 +24,7 @@ export default function Command() {
           params: {
             cmd: 'check_spelling',
             text: searchString,
-            slang: 'en_GB',
+            slang: preferences.lang,
             out_type: 'words',
             format: 'json'
           },
