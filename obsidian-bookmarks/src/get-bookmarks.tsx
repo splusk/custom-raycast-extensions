@@ -1,8 +1,8 @@
 import { ActionPanel, List, LocalStorage, Action } from "@raycast/api";
-import { useFilesByLastOpened } from "./utils/use-files";
+import { useFilesByLastOpened } from "./utils/get/use-files";
 import { useEffect, useState } from "react";
 import { File } from "./utils/files";
-import { sortFilesByLastOpened } from "./utils/get-files";
+import { sortFilesByLastOpened } from "./utils/get/get-files";
 
 export default function Command() {
   const { files, loading } = useFilesByLastOpened();

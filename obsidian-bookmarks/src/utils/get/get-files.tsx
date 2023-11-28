@@ -2,8 +2,8 @@ import { LocalStorage } from "@raycast/api";
 import fs from "node:fs/promises";
 import path from "node:path";
 import frontMatter from "front-matter";
-import { File, FrontMatter } from "./files";
-import { getOrCreateBookmarksPath } from "./vault-path";
+import { File, FrontMatter } from "../files";
+import { getOrCreateBookmarksPath } from "../vault-path";
 
 function isFulfilledPromise<T>(v: PromiseSettledResult<T>): v is PromiseFulfilledResult<T> {
   return v.status === "fulfilled";

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import getObsidianFiles, { sortFilesByLastOpened, sortFilesByTitle } from "./get-files";
-import { File, unique } from "./files";
+import { File, unique } from "../files";
 
 export type FilesHook = { loading: boolean; files: File[] };
 

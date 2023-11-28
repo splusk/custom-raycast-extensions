@@ -2,15 +2,21 @@
   "$schema": "https://www.raycast.com/schemas/extension.json",
   "name": "obsidian-bookmarks",
   "title": "Obsidian Bookmarks",
-  "description": "",
+  "description": "Raycast Obsidian Bookmark Manager",
   "icon": "obsidian-bookmarks.png",
   "author": "splusk",
   "license": "MIT",
   "commands": [
     {
-      "name": "index",
+      "name": "get-bookmarks",
       "title": "Show Obsidian Bookmarks",
       "description": "Show Obsidian Bookmarks",
+      "mode": "view"
+    },
+    {
+      "name": "save-bookmark",
+      "title": "Save Obsidian Bookmark",
+      "description": "Save Obsidian Bookmark",
       "mode": "view"
     }
   ],
