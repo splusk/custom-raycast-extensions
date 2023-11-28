@@ -1,0 +1,61 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "obsidian-bookmarks",
+  "title": "Obsidian Bookmarks",
+  "description": "",
+  "icon": "obsidian-bookmarks.png",
+  "author": "splusk",
+  "license": "MIT",
+  "commands": [
+    {
+      "name": "index",
+      "title": "Show Obsidian Bookmarks",
+      "description": "Show Obsidian Bookmarks",
+      "mode": "view"
+    }
+  ],
+  "preferences": [
+    {
+      "name": "vaultPath",
+      "title": "Vault Path",
+      "label": "Path of Vault",
+      "description": "Path to Folder containing all obsidian Vault.",
+      "type": "textfield",
+      "required": true,
+      "default": ""
+    },
+    {
+      "name": "bookmarksPath",
+      "title": "Bookmarks Folder",
+      "label": "Bookmarks Folder",
+      "description": "Folder name containing all obsidian bookmarks.",
+      "type": "textfield",
+      "required": true,
+      "default": "Bookmarks"
+    }
+  ],
+  "dependencies": {
+    "@raycast/api": "^1.62.2",
+    "front-matter": "^4.0.2",
+    "fuse.js": "^6.6.0",
+    "run-applescript": "^6.0.0",
+    "run-jxa": "^3.0.0",
+    "slugify": "^1.6.5",
+    "ts-dedent": "^2.2.0"
+  },
+  "devDependencies": {
+    "@raycast/eslint-config": "^1.0.6",
+    "@types/node": "20.8.10",
+    "@types/react": "18.2.27",
+    "eslint": "^8.51.0",
+    "prettier": "^3.0.3",
+    "typescript": "^5.2.2"
+  },
+  "scripts": {
+    "build": "ray build -e dist",
+    "dev": "ray develop",
+    "fix-lint": "ray lint --fix",
+    "lint": "ray lint",
+    "publish": "npx @raycast/api@latest publish"
+  }
+}
