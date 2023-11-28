@@ -10,9 +10,9 @@ const preferences: {
 
 const client = new OAuth.PKCEClient({
   redirectMethod: OAuth.RedirectMethod.Web,
-  providerName: "Miro",
+  providerName: "Miro Board",
   providerIcon: "miro-logo.png",
-  providerId: "miro",
+  providerId: "miro-board",
   description: "Connect your Miro account.",
 });
 
@@ -29,12 +29,11 @@ export const openInMiroApp = (url?: string) => {
 
 export async function _authorize() {
   const authRequest = await client.authorizationRequest({
-    endpoint: "https://miro.oauth-proxy.raycast.com/authorize",
-    clientId: preferences.clientId,
+    endpoint: "https://miro.oauth.raycast.com/authorize",
+    clientId: "3458764538138428083",
     scope: "",
   });
   const { authorizationCode } = await client.authorize(authRequest);
-  console.log(authorizationCode)
   const tokens = await fetchTokens(authRequest, authorizationCode);
   await client.setTokens(tokens);
 }
@@ -51,7 +50,6 @@ export async function authorize() {
           await client.setTokens(tokens);
         } catch (error: any) {
           console.log(`Error with getting refresh tokens due to: ${error.message}`);
-          // _authorize();
           return;
         }
       }
@@ -68,7 +66,7 @@ export async function fetchTokens(
   authRequest: OAuth.AuthorizationRequest,
   authCode: string
 ): Promise<OAuth.TokenResponse> {
-  const response = await fetch("https://miro.oauth-proxy.raycast.com/token", {
+  const response = await fetch("https://miro.oauth.raycast.com/token", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -90,7 +88,7 @@ export async function fetchTokens(
 
 // Refresh tokens
 async function refreshTokens(refreshToken: string): Promise<OAuth.TokenResponse> {
-  const response = await fetch("https://miro.oauth-proxy.raycast.com/refresh-token", {
+  const response = await fetch("https://miro.oauth.raycast.com/refresh-token", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -135,7 +133,7 @@ export async function fetchItems(): Promise<Board[]> {
 }
 
 export async function fetchRecentItems(): Promise<Board[]> {
-  const response = await fetch(`https://api.miro.com/v2/boards?limit=20&sort=default`, {
+  const response = await fetch(`https://api.miro.com/v2/boards?limit=20&sort=last_modified`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

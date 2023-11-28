@@ -23,6 +23,7 @@ const preferences: {
   profileUri: string;
   profileName: string;
   mfaKey: string;
+  pinCode: string;
 } = getPreferenceValues();
 
 async function pollStatus(expectedStatus: RegExp, timeoutSeconds = 15) {
@@ -152,7 +153,7 @@ export default async function Command(props: { arguments: Arguments }) {
     if (status.state === State.CONNECTED || status.state === State.CONNECTING) {
       await disconnect();
     } else {
-      await connect(props.arguments.pinCode);
+      await connect(preferences.pinCode || props.arguments.pinCode);
     }
   }
   do {

@@ -48,15 +48,14 @@ export default function Command() {
                 <Action title="Select" onAction={async () => {
                     if (!requiresAuth) {
                       await Clipboard.copy(props);
-                      notify(`${item} env variables set and copied to clipboard`);
                     } else {
                       try {
                         authenticate(item); // authenticate copies to clipboard
-                        notify(`${item} env variables set and copied to clipboard`);
                       } catch (error: any) {
                         await showHUD(`Failed to authenticate due to: ${error.message}`);
                       }
                     }
+                    notify(`${item} env variables set and copied to clipboard`);
                   }}
                 />
                 <Action title="Login" onAction={async () => {

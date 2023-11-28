@@ -26,7 +26,7 @@ export const parseConfigFile = () => {
             const profileLines = contents.split(/\r?\n/).filter(line => line.startsWith('['));
             return profileLines.map(line => {
                 const profile = line.startsWith('[profile') ? line.replace('profile', '') : line;
-                return removeSquareBrackets(profile);
+                return withoutSquareBrackets(profile);
             });
         }
         return [];
@@ -51,22 +51,13 @@ export const getDetails = (profileEnvs: ViewProfile[], selectedItem: string) => 
     return [['', ''],['', ''],['', '']];
 }
 
-export const authenticate_v0 = (profile: string) => {
-    try {
-        return execSync(
-            `yawsso auto -e --profile ${profile}`,
-            { env: { ...process.env, PATH: "/opt/homebrew/bin:/usr/bin" }, encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 }
-        );
-    } catch (error: any) {
-        return `Failed to authenticate due to: ${error.message}`;
-    }
-}
 export const authenticate = (profile: string) => {
     return execSync(
         `yawsso auto -e --profile ${profile}`,
         { env: { ...process.env, PATH: "/opt/homebrew/bin:/usr/bin" }, encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 }
     );
 }
+
 export const login = () => {
     return execSync(
         `yawsso login`,
@@ -74,7 +65,7 @@ export const login = () => {
     );
 }
 
-const removeSquareBrackets = (item: string) => item.replace('[', '').replace(']', '').replace(/\s/g, '');
+const withoutSquareBrackets = (item: string) => item.replace('[', '').replace(']', '').replace(/\s/g, '');
 
 const getFileContent = (path: string) => {
     return readFile(path, 'utf8')
@@ -91,7 +82,7 @@ const getProfileDetails = (section: string, now: Date) => {
     const profileVaribaleParts = sectionLines.slice(0, 4);
     const hasExpired = new Date(profileExpiration) < now;
     return {
-        profile: removeSquareBrackets(profileVaribaleParts[0]),
+        profile: withoutSquareBrackets(profileVaribaleParts[0]),
         vars: !hasExpired ?
             getExportString(profileVaribaleParts[1]) + "\n" + getExportString(profileVaribaleParts[2]) + "\n" + getExportString(profileVaribaleParts[3]) : undefined
     }

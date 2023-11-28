@@ -50,7 +50,11 @@ export default function Command() {
   }, [searchText]);
 
   useEffect(() => {
-    // Clipboard.readText().then((text) => setSearchText(text));
+      Clipboard.readText().then((text) => {
+        Clipboard.clear().then(() => {
+          setSearchText(text);
+        });
+      });
   }, [searchText]);
 
   return (

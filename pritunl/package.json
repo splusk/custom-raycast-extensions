@@ -53,6 +53,13 @@
       "required": true
     },
     {
+      "name": "pinCode",
+      "title": "Pin code",
+      "description": "Pin code",
+      "type": "password",
+      "required": false
+    },
+    {
       "name": "mfaKey",
       "title": "2-Step Authentication Key",
       "description": "Key for generating 2FA codes.",

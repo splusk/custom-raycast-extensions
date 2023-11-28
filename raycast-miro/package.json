@@ -35,8 +35,8 @@
   ],
   "dependencies": {
     "@mirohq/miro-api": "^1.0.2",
-    "@raycast/api": "^1.52.1",
-    "@raycast/utils": "^1.4.10",
+    "@raycast/api": "1.42.2",
+    "@raycast/utils": "1.4.10",
     "node-fetch": "^3.2.10",
     "child_process": "^1.0.2"
   },
