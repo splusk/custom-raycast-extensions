@@ -1,18 +1,16 @@
 import { useCallback, useEffect, useState } from "react";
-import getObsidianFiles from "./get-files";
+import getObsidianFiles, { sortFilesByLastOpened, sortFilesByTitle } from "./get-files";
 import { File, unique } from "./files";
 
 export type FilesHook = { loading: boolean; files: File[] };
-export default function useFiles(): FilesHook {
+
+export const useFiles = (sortFunc: (files: File[]) => Promise<File[]>): FilesHook  => {
   const [loading, setLoading] = useState(true);
   const [files, setFiles] = useState<File[]>([]);
-  const addFiles = useCallback(
-    (newFiles: File[]) => {
-      setFiles((orig) => {
-        const unsorted = unique([...orig, ...newFiles]);
-        const sorted = unsorted.sort((a, b) => a.attributes.title.localeCompare(b.attributes.title));
-        return sorted;
-      });
+  const addFiles = useCallback(async (newFiles: File[]) => {
+      const unsorted = unique([...files, ...newFiles]);
+      const sorted = await sortFunc(unsorted);
+      setFiles(sorted);
     },
     [setFiles]
   );
@@ -24,4 +22,12 @@ export default function useFiles(): FilesHook {
   }, [addFiles, setLoading]);
 
   return { files, loading };
+}
+
+export const useFilesByTitle = (): FilesHook => {
+  return useFiles(sortFilesByTitle);
+}
+
+export const useFilesByLastOpened = (): FilesHook  => {
+  return useFiles(sortFilesByLastOpened);
 }

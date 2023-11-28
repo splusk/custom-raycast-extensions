@@ -1,4 +1,7 @@
 import { FrontMatterResult } from "front-matter";
+import { constants } from "node:fs";
+import * as path from "node:path";
+import * as fs from "node:fs/promises";
 
 export function isFrontMatter(v: unknown): v is FrontMatter {
   if (v == null || typeof v !== "object") return false;
@@ -26,6 +29,29 @@ export function isFile(v: unknown): v is File {
   );
 }
 
+export async function fileExists(filename: string): Promise<boolean> {
+  try {
+    const stat = await fs.stat(filename);
+    return Boolean(stat);
+  } catch {
+    return false;
+  }
+}
+
+export function isSubdirectory(parent: string, child: string): boolean {
+  const relative = path.relative(parent, child);
+  return !relative.startsWith("..") && !path.isAbsolute(relative);
+}
+
+export async function isReadWrite(filename: string): Promise<boolean> {
+  try {
+    await fs.access(filename, constants.R_OK | constants.W_OK);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function isStringArray(val: unknown): val is string[] {
     if (val == null) return false;
     return Array.isArray(val) && val.every((item) => typeof item === "string");
@@ -50,4 +76,5 @@ export interface File extends Omit<FrontMatterResult<FrontMatter>, "body" | "bod
   fullPath: string;
   body?: string;
   bodyBegin?: number;
+  lastOpened?: Date;
 }
