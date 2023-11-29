@@ -1,33 +1,36 @@
-import { useCallback, useEffect, useState } from "react";
-import getObsidianFiles, { sortFilesByLastOpened, sortFilesByTitle } from "./get-files";
-import { File, unique } from "../files";
+import { LocalStorage, getPreferenceValues } from "@raycast/api";
+import { useCachedPromise } from "@raycast/utils";
+import { Preferences } from "../vault-path";
+import getObsidianFiles, { sortByLastUsed, sortByTitle } from "./get-files";
+import { File } from "../files";
 
 export type FilesHook = { loading: boolean; files: File[] };
 
-export const useFiles = (sortFunc: (files: File[]) => Promise<File[]>): FilesHook  => {
-  const [loading, setLoading] = useState(true);
-  const [files, setFiles] = useState<File[]>([]);
-  const addFiles = useCallback(async (newFiles: File[]) => {
-      const unsorted = unique([...files, ...newFiles]);
-      const sorted = await sortFunc(unsorted);
-      setFiles(sorted);
+export const useFiles = () => {
+  return useCachedPromise(
+    async () => {
+      const newFiles = await getObsidianFiles();
+      return await getSortFunc()(newFiles);
     },
-    [setFiles]
+    [],
+    {
+      initialData: [],
+      keepPreviousData: true
+    },
   );
-
-  useEffect(() => {
-    const obsidian = getObsidianFiles().then((files) => addFiles(files));
-
-    Promise.allSettled([obsidian]).then(() => setLoading(false));
-  }, [addFiles, setLoading]);
-
-  return { files, loading };
 }
 
-export const useFilesByTitle = (): FilesHook => {
-  return useFiles(sortFilesByTitle);
+export const onOpen = async(fileName: string) => {
+  await LocalStorage.setItem(fileName, new Date().toISOString());
 }
 
-export const useFilesByLastOpened = (): FilesHook  => {
-  return useFiles(sortFilesByLastOpened);
+const getSortFunc = () => {
+  const { sortOrder } = getPreferenceValues<Preferences>();
+  switch (sortOrder) {
+    case "lastUsed":
+      return sortByLastUsed;
+    case "title":
+    default:
+      return sortByTitle;
+  }
 }

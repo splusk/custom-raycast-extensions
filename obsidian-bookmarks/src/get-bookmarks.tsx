@@ -1,20 +1,13 @@
-import { ActionPanel, List, LocalStorage, Action } from "@raycast/api";
-import { useFilesByLastOpened } from "./utils/get/use-files";
-import { useEffect, useState } from "react";
-import { File } from "./utils/files";
-import { sortFilesByLastOpened } from "./utils/get/get-files";
+import { ActionPanel, List, Action } from "@raycast/api";
+import { onOpen, useFiles } from "./utils/get/use-files";
+
 
 export default function Command() {
-  const { files, loading } = useFilesByLastOpened();
-  const [fileResult, setFileResults] = useState<File[]>(files);
-
-  useEffect(() => {
-      setFileResults(files);
-  }, [files]);
+  const { data, isLoading, revalidate } = useFiles();
 
   return (
-    <List isLoading={loading}>
-      {fileResult.map((file) => (
+    <List isLoading={isLoading}>
+      {data.map((file) => (
           <List.Item
           key={file.attributes.source}
           icon="obsidian-bookmarks.png"
@@ -22,11 +15,8 @@ export default function Command() {
           actions={
             <ActionPanel>
               <Action.OpenInBrowser url={file.attributes.source} onOpen={async () => {
-                await LocalStorage.setItem(file.fileName, new Date().toISOString());
-                sortFilesByLastOpened(files).then((sortedByLast) => {
-                  setFileResults(sortedByLast);
-                });
-                // popToRoot();
+                await onOpen(file.fileName);
+                revalidate();
               }}/>
               <Action.CopyToClipboard title="Copy Link" content={file.attributes.source} />
             </ActionPanel>

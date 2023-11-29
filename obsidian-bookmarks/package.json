@@ -38,10 +38,30 @@
       "type": "textfield",
       "required": true,
       "default": "Bookmarks"
+    },
+    {
+      "name": "sortOrder",
+      "title": "Sort Order",
+      "label": "Sort Order",
+      "description": "Sort Order of saved bookmarks.",
+      "type": "dropdown",
+      "required": true,
+      "default": "byTitle",
+      "data": [
+        {
+          "title": "By Title",
+          "value": "title"
+        },
+        {
+          "title": "Last Used",
+          "value": "lastUsed"
+        }
+      ]
     }
   ],
   "dependencies": {
     "@raycast/api": "^1.62.2",
+    "@raycast/utils": "1.10.1",
     "front-matter": "^4.0.2",
     "fuse.js": "^6.6.0",
     "run-applescript": "^6.0.0",

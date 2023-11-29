@@ -4,9 +4,10 @@ import * as os from "node:os";
 import * as path from "node:path";
 import { isReadWrite, isSubdirectory } from "./files";
 
-interface Preferences {
+export interface Preferences {
     vaultPath: string;
     bookmarksPath: string;
+    sortOrder: string;
 }
 
 export function showErrorToast(error: unknown): Promise<Toast> {

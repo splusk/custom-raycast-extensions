@@ -28,12 +28,12 @@ export default async function getObsidianFiles(): Promise<Array<File>> {
   return fileResults;
 }
 
-export const sortFilesByTitle = (files: File[]) => {
+export const sortByTitle = (files: File[]) => {
   return Promise.resolve(files.sort((a, b) => a.attributes.title.localeCompare(b.attributes.title)));
 };
 
-export const sortFilesByLastOpened = (files: File[]) => {
-  const checkForLastOpenedDates = async () => {
+export const sortByLastUsed = (files: File[]) => {
+  const getLastUsedDates = async () => {
     return await Promise.all(files.map(async (value) => {
       const aDate = await LocalStorage.getItem<string>(value.fileName);
       const lastOpened = aDate ? new Date(aDate) : new Date(value.attributes.saved);
@@ -44,7 +44,7 @@ export const sortFilesByLastOpened = (files: File[]) => {
     }));
   }
 
-  return checkForLastOpenedDates().then((results) => {
+  return getLastUsedDates().then((results) => {
     return results.sort((a,b) => {
       return a.lastOpened.getTime() - b.lastOpened.getTime()
     }).reverse();
