@@ -6,13 +6,13 @@ export interface Link {
   url: string;
 }
 
-export function isLink(val: unknown): val is Link {
+export const isLink = (val: unknown): val is Link => {
   if (val == null || typeof val !== "object") return false;
   const link = val as Link;
   return typeof link.title === "string" && typeof link.url === "string";
 }
 
-export async function getFrontmostLink(): Promise<Link | null> {
+export const getFrontmostLink = async(): Promise<Link | null> => {
   const result = await runJxa(`
     const chrome = new Set(["com.google.Chrome", "com.google.Chrome.beta", "com.google.Chrome.canary"]);
     const safari = new Set(["com.apple.Safari", "com.apple.SafariTechPreview"]);

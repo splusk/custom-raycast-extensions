@@ -10,14 +10,14 @@ export interface Preferences {
     sortOrder: string;
 }
 
-export function showErrorToast(error: unknown): Promise<Toast> {
+export const showErrorToast = (error: unknown): Promise<Toast> => {
     return showToast({
         style: Toast.Style.Failure,
         title: String(error),
       });
   }
 
-export async function getVaultPath(): Promise<string> {
+export const getVaultPath = async(): Promise<string> => {
   const { vaultPath } = getPreferenceValues<Preferences>();
   if (vaultPath == null || !vaultPath.trim()) {
     showErrorToast(
@@ -60,7 +60,7 @@ export async function getVaultPath(): Promise<string> {
   return result;
 }
 
-export async function getOrCreateBookmarksPath(): Promise<string> {
+export const getOrCreateBookmarksPath = async(): Promise<string> => {
   const vaultPath = await getVaultPath();
 
   const { bookmarksPath } = getPreferenceValues<Preferences>();

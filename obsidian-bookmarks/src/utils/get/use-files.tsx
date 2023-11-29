@@ -1,8 +1,8 @@
-import { LocalStorage, getPreferenceValues } from "@raycast/api";
+import { LocalStorage } from "@raycast/api";
 import { useCachedPromise } from "@raycast/utils";
-import { Preferences } from "../vault-path";
-import getObsidianFiles, { sortByLastUsed, sortByTitle } from "./get-files";
+import { getObsidianFiles } from "./get-files";
 import { File } from "../files";
+import { getPopularityScoreBasedOnDate, getSortFunc } from "./sort";
 
 export type FilesHook = { loading: boolean; files: File[] };
 
@@ -10,7 +10,7 @@ export const useFiles = () => {
   return useCachedPromise(
     async () => {
       const newFiles = await getObsidianFiles();
-      return await getSortFunc()(newFiles);
+      return getSortFunc().then((fn) => fn(newFiles));
     },
     [],
     {
@@ -20,17 +20,14 @@ export const useFiles = () => {
   );
 }
 
-export const onOpen = async(fileName: string) => {
+export const onOpen = async(file: File) => {
+  const fileName = file.fileName;
   await LocalStorage.setItem(fileName, new Date().toISOString());
-}
-
-const getSortFunc = () => {
-  const { sortOrder } = getPreferenceValues<Preferences>();
-  switch (sortOrder) {
-    case "lastUsed":
-      return sortByLastUsed;
-    case "title":
-    default:
-      return sortByTitle;
+  const popScore = await LocalStorage.getItem(`${fileName}-pop`) as string | undefined;
+  if (popScore) {
+    await LocalStorage.setItem(`${fileName}-pop`, `${parseInt(popScore) * 100}`);
+  } else {
+    const score = await getPopularityScoreBasedOnDate(file, 100);
+    await LocalStorage.setItem(`${fileName}-pop`, `${score}`);
   }
 }

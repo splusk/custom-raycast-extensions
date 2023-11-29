@@ -1,20 +1,12 @@
 import { LocalStorage, Toast, showToast } from "@raycast/api";
 import { URL } from "node:url";
 import * as path from "node:path";
-import { File, FrontMatter, fileExists } from "../files";
+import { formatDate, File, FrontMatter, fileExists } from "../files";
 import dedent from "ts-dedent";
 import * as fs from "node:fs/promises";
 import slugify from "./slugify";
 import { getOrCreateBookmarksPath } from "../vault-path";
 import { Link } from "./use-frontmost-link";
-
-const formatDate = (date: Date): string => {
-  const year = String(date.getFullYear()).padStart(4, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-
-  return `${year}-${month}-${day}`;
-}
 
 const getPublisher = (urlAsString: string): string | null => {
   try {
@@ -28,18 +20,18 @@ const getPublisher = (urlAsString: string): string | null => {
   }
 }
 
-async function getFileName(filename: string): Promise<string> {
-    const ext = path.extname(filename);
-    const base = path.basename(filename, ext);
-    const bookmarksPath = await getOrCreateBookmarksPath();
-    let file = path.join(bookmarksPath, filename);
-    let index = 1;
-    while (await fileExists(file)) {
-      const newFilename = `${base}-${index++}.md`;
-      file = path.join(bookmarksPath, newFilename);
-    }
-    return file;
+const getFileName = async(filename: string): Promise<string> => {
+  const ext = path.extname(filename);
+  const base = path.basename(filename, ext);
+  const bookmarksPath = await getOrCreateBookmarksPath();
+  let file = path.join(bookmarksPath, filename);
+  let index = 1;
+  while (await fileExists(file)) {
+    const newFilename = `${base}-${index++}.md`;
+    file = path.join(bookmarksPath, newFilename);
   }
+  return file;
+}
 
 export const saveToObsidian = async(file: File): Promise<string> => {
     const template = dedent`
@@ -103,7 +95,7 @@ export const asFile = async(values: Link): Promise<File> => {
   };
 }
 
-export async function saveFile(file: File, isUpdate = false): Promise<File> {
+export const saveFile = async(file: File, isUpdate = false): Promise<File> => {
   const toastPromise = showToast({
     style: Toast.Style.Animated,
     title: isUpdate ? "Updating Bookmark" : "Saving Bookmark",

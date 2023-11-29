@@ -12,7 +12,7 @@ export interface LinkFormState {
   };
 }
 
-function isEqual<T>(before: T, after: T) {
+const isEqual = <T,>(before: T, after: T) => {
   if (before === after) return true;
   if (Array.isArray(before) && Array.isArray(after)) {
     if (before.length !== after.length) return false;
@@ -26,7 +26,7 @@ type FormField = keyof LinkFormState["values"];
 type LinkFormAction<Field extends FormField> =
   | { type: "changeField"; field: Field; value: LinkFormState["values"][Field] }
   | { type: "updateWithLink"; link: Link | null };
-function reducer<Field extends FormField>(state: LinkFormState, action: LinkFormAction<Field>): LinkFormState {
+const reducer = <Field extends FormField>(state: LinkFormState, action: LinkFormAction<Field>): LinkFormState => {
   switch (action.type) {
     case "changeField": {
       return {

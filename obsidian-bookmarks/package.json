@@ -49,12 +49,16 @@
       "default": "byTitle",
       "data": [
         {
-          "title": "By Title",
+          "title": "Title",
           "value": "title"
         },
         {
           "title": "Last Used",
           "value": "lastUsed"
+        },
+        {
+          "title": "Popularity",
+          "value": "popularity"
         }
       ]
     }

@@ -1,4 +1,3 @@
-import { LocalStorage } from "@raycast/api";
 import fs from "node:fs/promises";
 import path from "node:path";
 import frontMatter from "front-matter";
@@ -9,7 +8,7 @@ function isFulfilledPromise<T>(v: PromiseSettledResult<T>): v is PromiseFulfille
   return v.status === "fulfilled";
 }
 
-export default async function getObsidianFiles(): Promise<Array<File>> {
+export const getObsidianFiles = async(): Promise<Array<File>> => {
   const bookmarksPath = await getOrCreateBookmarksPath();
 
   const files = await fs.readdir(bookmarksPath);
@@ -28,25 +27,4 @@ export default async function getObsidianFiles(): Promise<Array<File>> {
   return fileResults;
 }
 
-export const sortByTitle = (files: File[]) => {
-  return Promise.resolve(files.sort((a, b) => a.attributes.title.localeCompare(b.attributes.title)));
-};
 
-export const sortByLastUsed = (files: File[]) => {
-  const getLastUsedDates = async () => {
-    return await Promise.all(files.map(async (value) => {
-      const aDate = await LocalStorage.getItem<string>(value.fileName);
-      const lastOpened = aDate ? new Date(aDate) : new Date(value.attributes.saved);
-      return {
-        lastOpened,
-        ...value
-      }
-    }));
-  }
-
-  return getLastUsedDates().then((results) => {
-    return results.sort((a,b) => {
-      return a.lastOpened.getTime() - b.lastOpened.getTime()
-    }).reverse();
-  });
-};
