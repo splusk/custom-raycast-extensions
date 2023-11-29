@@ -7,7 +7,7 @@ import { getPopularityScoreBasedOnDate, getSortFunc } from "./sort";
 export type FilesHook = { loading: boolean; files: File[] };
 
 export const useFiles = () => {
-  return useCachedPromise(
+  const { data, isLoading, revalidate } = useCachedPromise(
     async () => {
       const newFiles = await getObsidianFiles();
       return getSortFunc().then((fn) => fn(newFiles));
@@ -18,6 +18,7 @@ export const useFiles = () => {
       keepPreviousData: true
     },
   );
+  return { data, isLoading, fetchFiles: revalidate };
 }
 
 export const onOpen = async(file: File) => {

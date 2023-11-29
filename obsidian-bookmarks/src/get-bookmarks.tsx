@@ -4,10 +4,10 @@ import SortDropdown, { SortMode, setSortMode, sortModes } from "./utils/get/sort
 
 
 export default function Command() {
-  const { data, isLoading, revalidate } = useFiles();
+  const { data, isLoading, fetchFiles } = useFiles();
   const onChange = async(newValue: string) => {
     await setSortMode(newValue as SortMode);
-    revalidate();
+    fetchFiles();
   };
   return (
     <List isLoading={isLoading} searchBarAccessory={<SortDropdown sortModes={sortModes} onChange={onChange} />}>
@@ -21,7 +21,7 @@ export default function Command() {
                 <Action.OpenInBrowser url={file.attributes.source} onOpen={async () => {
                   // popToRoot({ clearSearchBar: true });
                   await onOpen(file);
-                  revalidate();
+                  fetchFiles();
                 }}/>
                 <Action.CopyToClipboard title="Copy Link" content={file.attributes.source} />
               </ActionPanel>
