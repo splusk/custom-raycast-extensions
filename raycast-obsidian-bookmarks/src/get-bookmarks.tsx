@@ -1,6 +1,7 @@
-import { ActionPanel, List, Action, popToRoot } from "@raycast/api";
+import { ActionPanel, List, Action, popToRoot, Icon, Color } from "@raycast/api";
 import { onOpen, useFiles } from "./utils/get/use-files";
 import SortDropdown, { SortMode, setSortMode, sortModes } from "./utils/get/sort";
+import openObsidianFile from "./utils/get/open-file";
 
 
 export default function Command() {
@@ -24,6 +25,7 @@ export default function Command() {
                   fetchFiles();
                 }}/>
                 <Action.CopyToClipboard title="Copy Link" content={file.attributes.source} />
+                <Action icon={{ source: Icon.Circle, tintColor: Color.Purple }} title="Open in Obsidian" onAction={() => openObsidianFile(file.fileName)} />
               </ActionPanel>
             }
           />    
