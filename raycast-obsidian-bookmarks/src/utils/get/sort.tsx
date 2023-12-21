@@ -57,13 +57,8 @@ export const getSortFunc = async () => {
   }
 }
 
-export const getPopularityScoreBasedOnDate = async (file: File, multiplier = 1) => {
-  const aDate = await LocalStorage.getItem<string>(file.fileName);
-  if (aDate) {
-    return getDateScore(aDate) * multiplier;
-  }
-  const savedDate = new Date(file.attributes.saved);
-  return getDateScore(formatDate(savedDate)) * multiplier;
+export const getPopularityScore = async (entry: string | undefined, initialValue: number) => {
+  return entry && entry.includes(",") ? Number(entry.split(',')[1]) + 100 : initialValue;
 }
 
 const sortByTitle = (files: File[]) => {
@@ -71,17 +66,18 @@ const sortByTitle = (files: File[]) => {
 };
 
 const sortByPopularity = async (files: File[]) => {
-  const getByPopularity = async () => {
+  const getByPopularity = async (files: File[]) => {
     return await Promise.all(files.map(async (value) => {
-      const popularity = await LocalStorage.getItem<string>(`${value.fileName}-pop`);
-      const popularityScore = popularity ? parseInt(popularity) : await getPopularityScoreBasedOnDate(value);
+      const entry = await LocalStorage.getItem<string>(value.fileName);
+      const score = await getPopularityScore(entry, 0);
       return {
-        popularityScore,
+        popularityScore: Number(score),
         ...value
       }
     }));
   }
-  const results = await getByPopularity();
+  const sortedByDateFirst = await sortByLastUsed(files);
+  const results = await getByPopularity(sortedByDateFirst);
   return results.sort((a, b) => {
     return b.popularityScore - a.popularityScore;
   });
@@ -104,7 +100,3 @@ const sortByLastUsed = async (files: File[]) => {
     return b.lastOpened.getTime() - a.lastOpened.getTime();
   });
 };
-
-const getDateScore = (date: string): number => {
-  return parseInt(date.split("T")[0].replace(/-/g, ""));
-}

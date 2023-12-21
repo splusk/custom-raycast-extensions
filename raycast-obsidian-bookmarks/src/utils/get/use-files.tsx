@@ -2,7 +2,7 @@ import { LocalStorage } from "@raycast/api";
 import { useCachedPromise } from "@raycast/utils";
 import { getObsidianFiles } from "./get-files";
 import { File } from "../files";
-import { getPopularityScoreBasedOnDate, getSortFunc } from "./sort";
+import { getPopularityScore, getSortFunc } from "./sort";
 
 export type FilesHook = { loading: boolean; files: File[] };
 
@@ -20,15 +20,9 @@ export const useFiles = () => {
   );
   return { data, isLoading, fetchFiles: revalidate };
 }
-
 export const onOpen = async(file: File) => {
   const fileName = file.fileName;
-  await LocalStorage.setItem(fileName, new Date().toISOString());
-  const popScore = await LocalStorage.getItem(`${fileName}-pop`) as string | undefined;
-  if (popScore) {
-    await LocalStorage.setItem(`${fileName}-pop`, `${parseInt(popScore) * 100}`);
-  } else {
-    const score = await getPopularityScoreBasedOnDate(file, 100);
-    await LocalStorage.setItem(`${fileName}-pop`, `${score}`);
-  }
+  const entry = await LocalStorage.getItem(fileName) as string | undefined;
+  const score = await getPopularityScore(entry, 50);
+  await LocalStorage.setItem(fileName, `${new Date().toISOString()},${score}`);
 }
