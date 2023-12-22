@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Action, ActionPanel, Clipboard, closeMainWindow, popToRoot, List, showHUD } from "@raycast/api";
-import { ViewProfile, authenticate, getDetails, getExportableProperties, login, parseConfigFile, parseCredentialsFile, requiresAuthentication } from "./util";
+import { ViewProfile, authenticate, getDetails, getExportableProperties, login, parseConfigFile, parseCredentialsFile, requiresAuthentication, runAutoCmd } from "./util";
 
 const notify = async (message: string) => {
   await showHUD(message);
@@ -55,7 +55,13 @@ export default function Command() {
                         await showHUD(`Failed to authenticate due to: ${error.message}`);
                       }
                     }
-                    notify(`${item} env variables set and copied to clipboard`);
+                    const result = await runAutoCmd(item);
+                    if (result) {
+                      await Clipboard.copy(result.replace(/\n/g, ""));
+                      notify(`${result} copied to clipboard`);
+                    } else {
+                      notify(`${item} env variables set and copied to clipboard`);
+                    }
                   }}
                 />
                 <Action title="Login" onAction={async () => {
@@ -63,6 +69,17 @@ export default function Command() {
                       login();
                     } catch (error: any) {
                       await showHUD(`Failed to login due to: ${error.message}`);
+                    }
+                  }}
+                />
+                <Action title="Copy Env Variables" onAction={async () => {
+                    try {
+                      const entry = (await parseCredentialsFile()).filter(entry => entry.profile === item)?.[0];
+                      if (entry?.vars) {
+                        await Clipboard.copy(entry.vars);
+                      }
+                    } catch (error: any) {
+                      await showHUD(`Failed to get variables: ${error.message}`);
                     }
                   }}
                 />

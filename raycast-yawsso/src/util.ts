@@ -1,3 +1,4 @@
+import { getPreferenceValues } from "@raycast/api";
 import { readFile } from "fs/promises";
 import { homedir } from 'os';
 import { execSync } from "child_process";
@@ -6,6 +7,11 @@ export interface ViewProfile {
     profile: string;
     vars: string | undefined
 };
+
+const preferences: {
+    awsAutoCmdProfile: string;
+    awsCommand: string;
+  } = getPreferenceValues();
 
 export const requiresAuthentication = (value: string) => value.toLocaleLowerCase().indexOf('has not been authenticated yet') > -1;
 
@@ -59,10 +65,20 @@ export const authenticate = (profile: string) => {
 }
 
 export const login = () => {
-    return execSync(
+    const cmd = execSync(
         `yawsso login`,
         { env: { ...process.env, PATH: "/opt/homebrew/bin:/usr/bin" }, encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 }
     );
+    return cmd;
+}
+
+export const runAutoCmd = async (profile: string) => {
+    if (profile === preferences.awsAutoCmdProfile && preferences.awsCommand.length > 0) {
+        return execSync(
+            preferences.awsCommand,
+            { env: { ...process.env, PATH: "/opt/homebrew/bin:/usr/bin" }, encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 }
+        ).replace(/\n/g, "");    
+    }
 }
 
 const withoutSquareBrackets = (item: string) => item.replace('[', '').replace(']', '').replace(/\s/g, '');

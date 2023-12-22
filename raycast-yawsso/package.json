@@ -18,6 +18,24 @@
       "mode": "view"
     }
   ],
+  "preferences": [
+    {
+      "name": "awsAutoCmdProfile",
+      "type": "textfield",
+      "required": false,
+      "title": "Profile Name",
+      "description": "Profile name to check to see if the command should be run after login",
+      "default": ""
+    },
+    {
+      "name": "awsCommand",
+      "type": "textfield",
+      "required": false,
+      "title": "AWS Command",
+      "description": "AWS Command to run if above profile selected",
+      "default": ""
+    }
+  ],
   "dependencies": {
     "@raycast/api": "^1.49.3",
     "@raycast/utils": "^1.4.10",

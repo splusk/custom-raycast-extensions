@@ -7,7 +7,12 @@
 
 /* eslint-disable @typescript-eslint/ban-types */
 
-type ExtensionPreferences = {}
+type ExtensionPreferences = {
+  /** Profile Name - Profile name to check to see if the command should be run after login */
+  "awsAutoCmdProfile": string,
+  /** AWS Command - AWS Command to run if above profile selected */
+  "awsCommand": string
+}
 
 /** Preferences accessible in all the extension's commands */
 declare type Preferences = ExtensionPreferences
