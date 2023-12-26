@@ -45,7 +45,7 @@ export default function Command() {
             title={item} 
             actions={
               <ActionPanel>
-                <Action title="Select" onAction={async () => {
+                <Action title="Get Variables" onAction={async () => {
                     if (!requiresAuth) {
                       await Clipboard.copy(props);
                     } else {
@@ -55,13 +55,7 @@ export default function Command() {
                         await showHUD(`Failed to authenticate due to: ${error.message}`);
                       }
                     }
-                    const result = await runAutoCmd(item);
-                    if (result) {
-                      await Clipboard.copy(result.replace(/\n/g, ""));
-                      notify(`${result} copied to clipboard`);
-                    } else {
-                      notify(`${item} env variables set and copied to clipboard`);
-                    }
+                    notify(`${item} env variables set and copied to clipboard`);
                   }}
                 />
                 <Action title="Login" onAction={async () => {
@@ -80,6 +74,20 @@ export default function Command() {
                       }
                     } catch (error: any) {
                       await showHUD(`Failed to get variables: ${error.message}`);
+                    }
+                  }}
+                />
+                <Action title="Run Command" onAction={async () => {
+                    try {
+                      const result = await runAutoCmd();
+                      if (result) {
+                        await Clipboard.copy(result.replace(/\n/g, ""));
+                        await showHUD(`${result} copied to clipboard`);
+                      } else {
+                        await showHUD(`Run command failed to return a result`);
+                      }
+                    } catch (error: any) {
+                      await showHUD(`Failed to run command due to: ${error.message}`);
                     }
                   }}
                 />

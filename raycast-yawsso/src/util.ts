@@ -9,7 +9,6 @@ export interface ViewProfile {
 };
 
 const preferences: {
-    awsAutoCmdProfile: string;
     awsCommand: string;
   } = getPreferenceValues();
 
@@ -72,8 +71,8 @@ export const login = () => {
     return cmd;
 }
 
-export const runAutoCmd = async (profile: string) => {
-    if (profile === preferences.awsAutoCmdProfile && preferences.awsCommand.length > 0) {
+export const runAutoCmd = async () => {
+    if (preferences.awsCommand.length > 0) {
         return execSync(
             preferences.awsCommand,
             { env: { ...process.env, PATH: "/opt/homebrew/bin:/usr/bin" }, encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 }
