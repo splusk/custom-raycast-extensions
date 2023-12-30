@@ -1,21 +1,11 @@
 import { useEffect, useState } from "react";
-import { exec } from "child_process";
 import { ServiceList } from "./ServiceList";
+import { getStoredServices, Service } from "./util";
 
 export default function Command() {
-  const [services, setServices] = useState<string[]>(["TC-Frida,199205302384"]);
+  const [services, setServices] = useState<Service[]>([]);
   useEffect(() => {
-    exec("sh " + __dirname + `/assets/getEntries.sh`, (error, stdout, stderr) => {
-      if (error) {
-        throw error;
-      }
-      if (stdout) {
-        const items = !stdout.includes("No record found") ? stdout.toString().split(":") : undefined;
-        if (items) {
-          setServices(services.concat(items));
-        }
-      }
-    });
+    getStoredServices().then((s) => setServices(s));
   }, []);
 
   return <ServiceList services={services} />;

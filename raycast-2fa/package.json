@@ -3,7 +3,7 @@
   "name": "raycast-2fa",
   "title": "raycast-2fa",
   "description": "",
-  "icon": "command-icon.png",
+  "icon": "2fa.png",
   "author": "shane",
   "license": "MIT",
   "commands": [

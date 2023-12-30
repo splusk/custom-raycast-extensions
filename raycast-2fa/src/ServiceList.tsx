@@ -1,53 +1,42 @@
 import { Action, ActionPanel, Clipboard, closeMainWindow, List, popToRoot, showHUD } from "@raycast/api";
-import { generateToken } from "node-2fa";
 import { RegisterForm } from "./RegisterForm";
-import { exec } from "child_process";
+import { removeService, getToken, Service } from "./util";
 
-interface FA_TOKEN {
-  token: string;
-}
-
-export const ServiceList = ({ services }: { services: string[] }) => {
+export const ServiceList = ({ services }: { services: Service[] }) => {
   const copyToClipboard = async (code: string) => {
-    const value = /^\d+$/.test(code) && code.length === 12 ? code : (generateToken(code) as FA_TOKEN).token;
-    await Clipboard.copy(value);
-    // const token = generateToken(code) as FA_TOKEN;
-    // await Clipboard.copy(token.token);
+    await Clipboard.copy(getToken(code));
     await showHUD("Copied to clipboard");
-    popToRoot();
+    await popToRoot();
     await closeMainWindow();
   };
-  const deleteItem = (code: string) => {
-    const newServices = services.filter((service) => !service.includes(code));
-    exec("sh " + __dirname + `/assets/update.sh ${newServices}`, (error, stdout, stderr) => {
-      if (error) {
-        throw error;
-      }
-      if (stdout && stdout.includes("Updated")) {
-        popToRoot();
-      }
-    });
-  };
+
+  if (!services || services.length === 0) {
+    return <RegisterForm />;
+  }
+
   return (
     <List>
-      {services.map((service: string, index: number) => {
-        const [name, code] = service.split(",");
-        if (name && code) {
-          return (
-            <List.Item
-              key={index}
-              icon="list-icon.png"
-              title={name}
-              actions={
-                <ActionPanel>
-                  <Action title="Copy" onAction={() => copyToClipboard(code)} />
-                  <Action.Push title="Add new item" target={<RegisterForm />} />
-                  <Action title="Delete" onAction={() => deleteItem(code)} />
-                </ActionPanel>
-              }
-            />
-          );
-        }
+      {services.map((service) => {
+        return (
+          <List.Item
+            key={service.name}
+            icon="list-icon.png"
+            title={service.name}
+            actions={
+              <ActionPanel>
+                <Action title="Copy" onAction={() => copyToClipboard(service.code)} />
+                <Action.Push title="Add New Service" target={<RegisterForm />} />
+                <Action
+                  title="Delete Service"
+                  onAction={async () => {
+                    removeService(services, service);
+                    await popToRoot();
+                  }}
+                />
+              </ActionPanel>
+            }
+          />
+        );
       })}
     </List>
   );
