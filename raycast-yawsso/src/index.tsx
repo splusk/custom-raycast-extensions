@@ -45,8 +45,6 @@ export default function Command() {
             actions={
               <ActionPanel>
                 <Action title="Authenticate" onAction={async () => {
-                  console.log(details);
-                  console.log(metaDetails);
                     if (requiresAuthentication(details)) {
                       try {
                         authenticate(item);
