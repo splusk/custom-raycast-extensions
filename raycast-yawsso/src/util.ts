@@ -48,10 +48,9 @@ export const getExportableProperties = (profileEnvs: ViewProfile[], selectedItem
     return `Profile: **${selectedItem}** has NOT been authenticated yet. \n\rHit the **Enter** key to authenticate`;
 }
 
-export const getDetails = (profileEnvs: ViewProfile[], selectedItem: string) => {
-    const props = getExportableProperties(profileEnvs, selectedItem);
-    if (!requiresAuthentication(props)) {
-        return props.replaceAll('export', '').split('\n').map(ss => ss.split('='));
+export const getMetaDetails = (metaDetails: string) => {
+    if (!requiresAuthentication(metaDetails)) {
+        return metaDetails.replaceAll('export', '').split('\n').map(ss => ss.split('='));
     }
     return [['', ''],['', ''],['', '']];
 }

@@ -8,7 +8,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
 type ExtensionPreferences = {
-  /** AWS Command - AWS Command to run if above profile selected */
+  /** AWS Command - AWS Command to run against selected profile */
   "awsCommand": string
 }
 

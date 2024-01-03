@@ -20,6 +20,7 @@ export const useFiles = () => {
   );
   return { data, isLoading, fetchFiles: revalidate };
 }
+
 export const onOpen = async(file: File) => {
   const fileName = file.fileName;
   const entry = await LocalStorage.getItem(fileName) as string | undefined;

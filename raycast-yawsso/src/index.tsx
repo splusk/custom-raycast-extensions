@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Action, ActionPanel, Clipboard, closeMainWindow, popToRoot, List, showHUD } from "@raycast/api";
-import { ViewProfile, authenticate, getDetails, getExportableProperties, login, parseConfigFile, parseCredentialsFile, requiresAuthentication, runAutoCmd } from "./util";
+import { ViewProfile, authenticate, getMetaDetails, getExportableProperties, login, parseConfigFile, parseCredentialsFile, requiresAuthentication, runAutoCmd } from "./util";
 
 const notify = async (message: string) => {
   await showHUD(message);
@@ -36,29 +36,32 @@ export default function Command() {
   return (
     <List isShowingDetail onSearchTextChange={(newValue) => setSearchText(newValue)}>
       {items.map((item) => {
-        const props: string = getExportableProperties(exsitingEnvs, item);
-        const requiresAuth = requiresAuthentication(props);
-        const metaDetails = getDetails(exsitingEnvs, item);
+        const details = getExportableProperties(exsitingEnvs, item)
+        const metaDetails = getMetaDetails(details);
         return (
           <List.Item 
             key={item} 
             title={item} 
             actions={
               <ActionPanel>
-                <Action title="Get Variables" onAction={async () => {
-                    if (!requiresAuth) {
-                      await Clipboard.copy(props);
-                    } else {
+                <Action title="Authenticate" onAction={async () => {
+                  console.log(details);
+                  console.log(metaDetails);
+                    if (requiresAuthentication(details)) {
                       try {
-                        authenticate(item); // authenticate copies to clipboard
+                        authenticate(item);
+                        await showHUD(`authenticate due to: ${item}`);
+                        await Clipboard.clear();
                       } catch (error: any) {
                         await showHUD(`Failed to authenticate due to: ${error.message}`);
                       }
                     }
-                    notify(`${item} env variables set and copied to clipboard`);
+                    const profile = `export AWS_PROFILE="${item}"`;
+                    await Clipboard.copy(profile);
+                    notify(`${profile} copied to clipboard`);
                   }}
                 />
-                <Action title="Login" onAction={async () => {
+                <Action title="Login to AWS" onAction={async () => {
                     try {
                       login();
                     } catch (error: any) {
@@ -77,7 +80,7 @@ export default function Command() {
                     }
                   }}
                 />
-                <Action title="Run Command" onAction={async () => {
+                <Action title="Run Command" shortcut={{ modifiers: ["opt"], key: "enter" }} onAction={async () => {
                     try {
                       const result = await runAutoCmd();
                       if (result) {
@@ -107,7 +110,7 @@ export default function Command() {
                     <List.Item.Detail.Metadata.Separator />
                   </List.Item.Detail.Metadata>
                 }
-                markdown={getExportableProperties(exsitingEnvs, item)}
+                markdown={details}
               />
             }
         />)})}

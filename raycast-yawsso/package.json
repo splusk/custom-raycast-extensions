@@ -14,7 +14,7 @@
     {
       "name": "index",
       "title": "AWS Local Profiles",
-      "description": "Show your local aws profiles to be selected",
+      "description": "Show your local aws profiles to be authenticated with",
       "mode": "view"
     }
   ],
@@ -24,7 +24,7 @@
       "type": "textfield",
       "required": false,
       "title": "AWS Command",
-      "description": "AWS Command to run if above profile selected",
+      "description": "AWS Command to run against selected profile",
       "default": ""
     }
   ],
