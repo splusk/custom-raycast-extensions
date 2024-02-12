@@ -1,5 +1,5 @@
 import { List, LocalStorage, getPreferenceValues } from "@raycast/api";
-import { File, formatDate } from "../files";
+import { File } from "../files";
 
 export const sortModes = ["lastUsed", "title", "popularity"];
 export type SortMode = typeof sortModes[number];
@@ -31,7 +31,7 @@ export default function SortDropdown(props: { sortModes: SortMode[]; onChange: (
 }
 
 export const setSortMode = async (sortMode: SortMode) => {
-    await LocalStorage.setItem("obsidian-bookmarks-sort-mode", sortMode);
+    LocalStorage.setItem("obsidian-bookmarks-sort-mode", sortMode);
 }
 
 export const getSortMode = async () => {
@@ -44,59 +44,36 @@ export const getSortMode = async () => {
   return sortMode;
 }
   
-export const getSortFunc = async () => {
+export const sortFilesByPref = async (files: File[]) => {
   const sortMode = await getSortMode();
   switch (sortMode) {
     case "lastUsed":
-      return sortByLastUsed;
+      return sortByLastViewed(files);
     case "popularity":
-        return sortByPopularity;
+      return sortByRank(files);
     case "title":
     default:
-      return sortByTitle;
+      return sortByTitle(files);
   }
 }
 
-export const getPopularityScore = async (entry: string | undefined, initialValue: number) => {
-  return entry && entry.includes(",") ? Number(entry.split(',')[1]) + 100 : initialValue;
-}
-
+const sortByLastViewed = (files: File[]) => {
+  return Promise.resolve(files.sort((a, b) => {
+    const viewedLastA = a.attributes.updated || a.attributes.created || a.attributes.saved;
+    const viewedLastADate = viewedLastA ? new Date(viewedLastA) : new Date();
+    const viewedLastB = b.attributes.updated || b.attributes.created || b.attributes.saved;
+    const viewedLastBDate = viewedLastB ? new Date(viewedLastB) : new Date();
+    return viewedLastBDate.getTime() - viewedLastADate.getTime();
+  }));
+};
+const sortByRank = async (files: File[]) => {
+  const sortedByLasteViewed = await sortByLastViewed(files);
+  return Promise.resolve(sortedByLasteViewed.sort((a, b) => {
+    const rankA = a.attributes.rank || 0;
+    const rankB = b.attributes.rank || 0;
+    return rankB - rankA;
+  }));
+};
 const sortByTitle = (files: File[]) => {
   return Promise.resolve(files.sort((a, b) => a.attributes.title.localeCompare(b.attributes.title)));
-};
-
-const sortByPopularity = async (files: File[]) => {
-  const getByPopularity = async (files: File[]) => {
-    return await Promise.all(files.map(async (value) => {
-      const entry = await LocalStorage.getItem<string>(value.fileName);
-      const score = await getPopularityScore(entry, 0);
-      return {
-        popularityScore: Number(score),
-        ...value
-      }
-    }));
-  }
-  const sortedByDateFirst = await sortByLastUsed(files);
-  const results = await getByPopularity(sortedByDateFirst);
-  return results.sort((a, b) => {
-    return b.popularityScore - a.popularityScore;
-  });
-};
-  
-const sortByLastUsed = async (files: File[]) => {
-  const getLastUsedDates = async () => {
-    return await Promise.all(files.map(async (value) => {
-      const aDate = await LocalStorage.getItem<string>(value.fileName);
-      const lastOpened = aDate ? new Date(aDate) : new Date(value.attributes.saved);
-      return {
-        lastOpened,
-        ...value
-      }
-    }));
-  }
-
-  const results = await getLastUsedDates();
-  return results.sort((a, b) => {
-    return b.lastOpened.getTime() - a.lastOpened.getTime();
-  });
 };

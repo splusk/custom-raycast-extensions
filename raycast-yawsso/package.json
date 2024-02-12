@@ -26,6 +26,14 @@
       "title": "AWS Command",
       "description": "AWS Command to run against selected profile",
       "default": ""
+    },
+    {
+      "name": "awsHostname",
+      "type": "textfield",
+      "required": false,
+      "title": "Host",
+      "description": "Host to run command against",
+      "default": ""
     }
   ],
   "dependencies": {

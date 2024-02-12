@@ -10,6 +10,7 @@ export interface ViewProfile {
 
 const preferences: {
     awsCommand: string;
+    awsHostname: string;
   } = getPreferenceValues();
 
 export const requiresAuthentication = (value: string) => value.toLocaleLowerCase().indexOf('has not been authenticated yet') > -1;
@@ -70,10 +71,11 @@ export const login = () => {
     return cmd;
 }
 
-export const runAutoCmd = async () => {
-    if (preferences.awsCommand.length > 0) {
+export const runAutoCmd = async (hostname?: string) => {
+    const host = hostname && hostname.endsWith('.amazonaws.com') ? hostname : preferences.awsHostname;
+    if (preferences.awsCommand.length > 0 && host.length > 0) {
         return execSync(
-            preferences.awsCommand,
+            `${preferences.awsCommand} --hostname ${host}`,
             { env: { ...process.env, PATH: "/opt/homebrew/bin:/usr/bin" }, encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 }
         ).replace(/\n/g, "");    
     }

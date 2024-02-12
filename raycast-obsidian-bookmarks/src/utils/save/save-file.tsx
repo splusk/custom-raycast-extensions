@@ -1,7 +1,7 @@
-import { LocalStorage, Toast, showToast } from "@raycast/api";
+import { Toast, showToast } from "@raycast/api";
 import { URL } from "node:url";
 import * as path from "node:path";
-import { formatDate, File, FrontMatter, fileExists } from "../files";
+import { formatDateForFileName, File, FrontMatter, fileExists } from "../files";
 import dedent from "ts-dedent";
 import * as fs from "node:fs/promises";
 import slugify from "./slugify";
@@ -37,11 +37,11 @@ export const saveToObsidian = async(file: File): Promise<string> => {
     const template = dedent`
     ---
     title: ${JSON.stringify(file.attributes.title)}
-    saved: ${formatDate(file.attributes.saved)}
+    created: ${JSON.stringify(file.attributes.created)}
     source: ${JSON.stringify(file.attributes.source)}
     publisher: ${JSON.stringify(file.attributes.publisher)}
-    read: ${JSON.stringify(file.attributes.read)}
     tags: ${JSON.stringify(file.attributes.tags)}
+    rank: ${JSON.stringify(file.attributes.rank)}
     ---
 
     ${file.body}
@@ -49,22 +49,19 @@ export const saveToObsidian = async(file: File): Promise<string> => {
 
   await Promise.allSettled([
     fs.writeFile(file.fullPath, template, { encoding: "utf-8" }),
-    LocalStorage.setItem(file.fileName, new Date().toISOString())
   ]);
   return file.fileName;
 }
 
 export const asFile = async(values: Link): Promise<File> => {
-  const midnight = new Date();
-  midnight.setHours(0, 0, 0, 0);
 
   const attributes: FrontMatter = {
     source: values.url,
     publisher: getPublisher(values.url),
     title: values.title,
     tags: [],
-    saved: midnight,
-    read: false,
+    created: new Date(),
+    rank: 0,
   };
 
   const body = dedent`
@@ -73,14 +70,15 @@ export const asFile = async(values: Link): Promise<File> => {
 
   const frontmatter = dedent`
   title: ${JSON.stringify(attributes.title)}
-  saved: ${formatDate(midnight)}
   source: ${JSON.stringify(attributes.source)}
   publisher: ${JSON.stringify(attributes.publisher)}
-  read: ${JSON.stringify(attributes.read)}
   tags: ${JSON.stringify(attributes.tags)}
+  rank: ${JSON.stringify(attributes.rank)}
   `;
 
-  const fileSlug = `${formatDate(midnight)}-${slugify(attributes.title)}`.slice(0, 150);
+  const dateForFileName = new Date()
+  dateForFileName.setHours(0, 0, 0, 0);
+  const fileSlug = `${formatDateForFileName(dateForFileName)}-${slugify(attributes.title)}`.slice(0, 150);
   const baseName = `${fileSlug}.md`;
   const fullPath = await getFileName(baseName);
   const fileName = path.basename(fullPath);
@@ -93,6 +91,19 @@ export const asFile = async(values: Link): Promise<File> => {
     fullPath,
     bodyBegin: 4 + frontmatter.length,
   };
+}
+
+export const updateFileOnOpen = async(file: File): Promise<File> => {
+  const attributes: FrontMatter = {
+    ...file.attributes,
+    rank: file.attributes?.rank ? file.attributes.rank + 10 : 5
+  };
+
+  const updated = {
+    ...file,
+    attributes,
+  };
+  return updated;
 }
 
 export const saveFile = async(file: File, isUpdate = false): Promise<File> => {

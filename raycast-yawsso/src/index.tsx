@@ -72,15 +72,18 @@ export default function Command() {
                       const entry = (await parseCredentialsFile()).filter(entry => entry.profile === item)?.[0];
                       if (entry?.vars) {
                         await Clipboard.copy(entry.vars);
+                        closeMainWindow()
                       }
                     } catch (error: any) {
                       await showHUD(`Failed to get variables: ${error.message}`);
                     }
                   }}
                 />
+                <Action.Paste content="api@raycast.com" />
                 <Action title="Run Command" shortcut={{ modifiers: ["opt"], key: "enter" }} onAction={async () => {
                     try {
-                      const result = await runAutoCmd();
+                      const { text: hostName } = await Clipboard.read();
+                      const result = await runAutoCmd(hostName);
                       if (result) {
                         await Clipboard.copy(result.replace(/\n/g, ""));
                         await showHUD(`${result} copied to clipboard`);

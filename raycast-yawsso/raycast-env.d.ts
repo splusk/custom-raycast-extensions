@@ -9,7 +9,9 @@
 
 type ExtensionPreferences = {
   /** AWS Command - AWS Command to run against selected profile */
-  "awsCommand": string
+  "awsCommand": string,
+  /** Host - Host to run command against */
+  "awsHostname": string
 }
 
 /** Preferences accessible in all the extension's commands */

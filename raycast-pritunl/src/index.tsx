@@ -7,7 +7,7 @@ import {
   getPreferenceValues,
   closeMainWindow,
   showHUD,
-  confirmAlert,
+  confirmAlert
 } from "@raycast/api";
 import { execSync } from "child_process";
 import { setTimeout } from "timers/promises";
@@ -39,7 +39,7 @@ async function connect(pinCode: string | undefined) {
   const connectingToast = await showToast({
     style: Toast.Style.Animated,
     title: "Connecting...",
-    message: preferences.profileName,
+    message: preferences.profileName
   });
   const { token } = generateToken(preferences.mfaKey) || {};
   try {
@@ -48,12 +48,12 @@ async function connect(pinCode: string | undefined) {
     await pollStatus(/\d+ (secs|mins?)/i);
     connectingToast.hide();
     if (preferences.autoDismiss) {
-       await showHUD("Connected to VPN");
+      await showHUD("Connected to VPN");
     } else {
       await showToast({
         style: Toast.Style.Success,
         title: "Connected to VPN",
-        message: preferences.profileName,
+        message: preferences.profileName
       });
     }
   } catch (e) {
@@ -62,7 +62,7 @@ async function connect(pinCode: string | undefined) {
     await showToast({
       style: Toast.Style.Failure,
       title: "Failed to connect to VPN",
-      message: (e as Error).message,
+      message: (e as Error).message
     });
   }
 }
@@ -71,7 +71,7 @@ async function disconnect() {
   if (
     preferences.promptBeforeDisconnecting &&
     !(await confirmAlert({
-      title: "Are you sure you want to disconnect from VPN?",
+      title: "Are you sure you want to disconnect from VPN?"
     }))
   )
     return;
@@ -79,7 +79,7 @@ async function disconnect() {
   const disconnectingToast = await showToast({
     style: Toast.Style.Animated,
     title: "Disconnecting...",
-    message: preferences.profileName,
+    message: preferences.profileName
   });
   try {
     execSync(`sh ${__dirname}/assets/disconnect.sh "${preferences.profileName}"`);
@@ -92,7 +92,7 @@ async function disconnect() {
       await showToast({
         style: Toast.Style.Success,
         title: "Disconnected from VPN",
-        message: preferences.profileName,
+        message: preferences.profileName
       });
     }
   } catch (e) {
@@ -101,7 +101,7 @@ async function disconnect() {
     await showToast({
       style: Toast.Style.Failure,
       title: "Failed to disconnect from VPN",
-      message: (e as Error).message,
+      message: (e as Error).message
     });
   }
 }
@@ -113,7 +113,7 @@ function checkOrImportProfile() {
 enum State {
   DISCONNECTED = "Disconnected",
   CONNECTING = "Connecting",
-  CONNECTED = "Connected",
+  CONNECTED = "Connected"
 }
 
 type Status =
@@ -133,7 +133,7 @@ function getStatus(): Status {
 }
 
 async function updateSubtitle(status: Status) {
-  const meta = status.state === State.CONNECTED ? `(${status.onlineFor})` : "";
+  const meta = status.state === State.CONNECTED ? `to: ${preferences.profileName} (${status.onlineFor})` : "";
   await updateCommandMetadata({ subtitle: `${status.state} ${meta}` });
 }
 
@@ -146,7 +146,7 @@ export default async function Command(props: { arguments: Arguments }) {
       await showToast({
         style: Toast.Style.Failure,
         title: "Failed to find profile",
-        message: preferences.profileName,
+        message: preferences.profileName
       });
       return;
     }

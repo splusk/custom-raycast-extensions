@@ -14,6 +14,5 @@ export function createObsidianUri(file: string, inBookmarks = true): string {
 
 export default function openObsidianFile(file: string, inBookmarks = true): Promise<void> {
   const url = createObsidianUri(file, inBookmarks);
-  console.log("Opening URL", url);
   return open(url);
 }

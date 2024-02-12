@@ -3,12 +3,22 @@ import { constants } from "node:fs";
 import * as path from "node:path";
 import * as fs from "node:fs/promises";
 
-export const formatDate = (date: Date): string => {
+export const formatDateForFileName = (date: Date|undefined): string => {
+  if (date) {
   const year = String(date.getFullYear()).padStart(4, "0");
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
 
   return `${year}-${month}-${day}`;
+  }
+  return "";
+}
+
+export const formatDateForAttribute = (date: Date|undefined): string => {
+  if (date) {
+    return date.toLocaleString([], {year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute:'2-digit'}).replace(', ', 'T');
+  }
+  return new Date().toLocaleString([], {year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute:'2-digit'}).replace(', ', 'T');
 }
 
 export const isFrontMatter = (v: unknown): v is FrontMatter => {
@@ -17,8 +27,7 @@ export const isFrontMatter = (v: unknown): v is FrontMatter => {
   return (
     typeof frontMatter.source === "string" &&
     typeof frontMatter.title === "string" &&
-    typeof frontMatter.saved === "string" &&
-    typeof frontMatter.read === "boolean" &&
+    typeof frontMatter.created === "string" &&
     (frontMatter.publisher == null || typeof frontMatter.publisher === "string") &&
     isStringArray(frontMatter.tags)
   );
@@ -75,8 +84,10 @@ export interface FrontMatter {
   publisher: string | null;
   title: string;
   tags: string[];
-  saved: Date;
-  read: boolean;
+  created?: Date;
+  saved?: Date;
+  updated?: Date;
+  rank?: number;
 }
 
 export interface File extends Omit<FrontMatterResult<FrontMatter>, "body" | "bodyBegin"> {
@@ -84,6 +95,4 @@ export interface File extends Omit<FrontMatterResult<FrontMatter>, "body" | "bod
   fullPath: string;
   body?: string;
   bodyBegin?: number;
-  lastOpened?: Date;
-  popularityScore?: number;
 }
