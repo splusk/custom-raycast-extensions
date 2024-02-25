@@ -7,6 +7,8 @@ const preferences: {
   lang: string;
 } = getPreferenceValues();
 
+const SPELLING_MATCH_SUCCESS = 'Your spelling looks good!'
+
 export default function Command() {
   const [searchText, setSearchText] = useState<string|undefined>("");
   const [results, setResults] = useState<Array<string>>([]);
@@ -30,13 +32,14 @@ export default function Command() {
           },
         });
         if (response.data.length > 0) {
+          console.log(response.data[0].suggestions);
           if (response.data[0].suggestions.length > 0) {
             setResults(response.data[0].suggestions);
           } else {
             setResults([`Dam not even I can work this word out`]);
           }
         } else {
-          setResults([`Your spelling looks good!`]);
+          setResults([SPELLING_MATCH_SUCCESS]);
         }
       } catch (error) {
         console.error(error);
@@ -64,17 +67,18 @@ export default function Command() {
       searchBarPlaceholder="Search..."
       throttle={true}
     >
-      {results.map((result) => (
-        <List.Item
-          key={result}
-          title={result}
-          actions={
-            <ActionPanel>
-              <Action.CopyToClipboard title="Copy" content={result} />
-            </ActionPanel>
-          }
-        />
-      ))}
+      {results.map((result) => {
+        return (
+          <List.Item
+            key={result}
+            title={result}
+            actions={
+              <ActionPanel>
+                <Action.CopyToClipboard title="Copy" content={result} />
+              </ActionPanel>
+            }
+          />
+      )})}
     </List>
   );
 }

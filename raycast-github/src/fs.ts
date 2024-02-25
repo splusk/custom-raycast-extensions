@@ -1,0 +1,51 @@
+import * as fs from 'fs';
+import * as path from 'path';
+
+export interface SimplifiedWorkspace {
+    path: string;
+    name: string;
+    icon: string;
+    defaultApp: string;
+    sshUrl?: string;
+}
+
+export const getDirectSubfolders = (folderPath: string): SimplifiedWorkspace[] => {
+  const dirs: SimplifiedWorkspace[] = [];
+
+  try {
+    const nodes = fs.readdirSync(folderPath);
+
+    if (nodes) {
+      nodes.forEach((node: string) => {
+        const childFolderPath = path.join(folderPath, node);
+        const isDir = fs.statSync(childFolderPath).isDirectory();
+
+        if (isDir) {
+          const hasPackageJson = isFileExists(path.join(childFolderPath, 'package.json'));
+          dirs.push({
+            path: childFolderPath,
+            name: node,
+            icon: "https://github.com/webbhalsa.png?size=32",
+            defaultApp: hasPackageJson ? "Visual Studio Code" : "IntelliJ IDEA"
+          });
+        }
+      });
+    }
+  } catch (error) {
+    console.error('Can not read folder: ', folderPath, '. Detail error: ', error);
+  }
+
+  return dirs;
+}
+
+/**
+ * Check a file is exist or not
+ */
+export const isFileExists = (filePath: string) => {
+  try {
+    fs.accessSync(filePath);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
