@@ -1,35 +1,34 @@
 import { useState, useEffect } from "react";
-import { Action, ActionPanel, getPreferenceValues, Icon, List } from "@raycast/api";
-import { getDirectSubfolders, SimplifiedWorkspace } from "./fs";
-import { Repo, getRepos } from "./githubClient";
+import { Action, ActionPanel, getPreferenceValues, List } from "@raycast/api";
+import { getLocalRepos } from "./fs";
+import { getRemoteRepos } from "./githubClient";
 
-const NTELLIJ_APP_NAME = "IntelliJ IDEA";
-const VS_CODE_APP_NAME = "Visual Studio Code";
+export interface SimplifiedWorkspace {
+    path: string;
+    name: string;
+    icon: string;
+    defaultApp: string;
+    sshUrl?: string;
+}
 
 export default function ListRepos() {
   const [localRepos, setLocalRepos] = useState<SimplifiedWorkspace[]>([]);
   const [searchText, setSearchText] = useState("");
   const [remoteRepos, setRemoteRepos] = useState<SimplifiedWorkspace[]>([]);
-  const { kryCodePath, orgName } = getPreferenceValues();
+  const { kryCodePath, orgName, defaultApp, clientDefaultApp } = getPreferenceValues();
 
   useEffect(() => {
-    const folders = getDirectSubfolders(kryCodePath);
+    const folders = getLocalRepos(kryCodePath);
     setLocalRepos(folders);
   }, []);
 
   useEffect(() => {
-    const folders = getDirectSubfolders(kryCodePath).filter((item) => item.name.includes(searchText));
+    const folders = getLocalRepos(kryCodePath).filter((item) => item.name.includes(searchText));
     if (folders.length > 0) {
       setLocalRepos(folders);
     } else {
-      getRepos(searchText).then((repos) => {
-        setRemoteRepos(repos.map((item: Repo) => ({
-          path: item.html_url,
-          name: item.name,
-          icon: "github.png",
-          defaultApp: "IntelliJ IDEA",
-          sshUrl: item.ssh_url
-        })));
+      getRemoteRepos(searchText).then((repos) => {
+        setRemoteRepos(repos);
       });
     }
   }, [searchText]);
@@ -52,8 +51,8 @@ export default function ListRepos() {
               <Action.OpenInBrowser title="Open in Github" url={`https://github.com/${orgName}/${item.name}`}/>
               <Action.Open title="Open in App" application={item.defaultApp} target={item.path} />
               <Action.OpenInBrowser title="View PRs" url={`https://github.com/${orgName}/${item.name}/pulls`}/>
-              <Action.Open title="Open with Intellij" application={NTELLIJ_APP_NAME} target={item.path} />
-              <Action.Open title="Open with VS Code" application={VS_CODE_APP_NAME} target={item.path} />
+              <Action.Open title="Open with Default App" application={defaultApp} target={item.path} />
+              <Action.Open title="Open with Client App" application={clientDefaultApp ? clientDefaultApp: defaultApp} target={item.path} />
             </ActionPanel>
           }
         />

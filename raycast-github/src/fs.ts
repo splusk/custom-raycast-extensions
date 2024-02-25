@@ -1,15 +1,11 @@
+import { getPreferenceValues } from '@raycast/api';
 import * as fs from 'fs';
 import * as path from 'path';
+import { SimplifiedWorkspace } from '.';
 
-export interface SimplifiedWorkspace {
-    path: string;
-    name: string;
-    icon: string;
-    defaultApp: string;
-    sshUrl?: string;
-}
+const { orgName, defaultApp, clientDefaultApp } = getPreferenceValues()
 
-export const getDirectSubfolders = (folderPath: string): SimplifiedWorkspace[] => {
+export const getLocalRepos = (folderPath: string): SimplifiedWorkspace[] => {
   const dirs: SimplifiedWorkspace[] = [];
 
   try {
@@ -25,8 +21,8 @@ export const getDirectSubfolders = (folderPath: string): SimplifiedWorkspace[] =
           dirs.push({
             path: childFolderPath,
             name: node,
-            icon: "https://github.com/webbhalsa.png?size=32",
-            defaultApp: hasPackageJson ? "Visual Studio Code" : "IntelliJ IDEA"
+            icon: `https://github.com/${orgName}.png?size=32`,
+            defaultApp: hasPackageJson && clientDefaultApp ? clientDefaultApp : defaultApp
           });
         }
       });

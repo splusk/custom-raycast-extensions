@@ -44,6 +44,24 @@
       "type": "textfield",
       "required": true,
       "default": ""
+    },
+    {
+      "name": "defaultApp",
+      "title": "Default Application",
+      "label": "Default Application",
+      "description": "Application Name to open repo with",
+      "type": "textfield",
+      "required": true,
+      "default": "IntelliJ IDEA"
+    },
+    {
+      "name": "clientDefaultApp",
+      "title": "Client Code Default Application",
+      "label": "Client Code Default Application",
+      "description": "Alternative application name to open client code with",
+      "type": "textfield",
+      "required": false,
+      "default": ""
     }
   ],
   "dependencies": {
