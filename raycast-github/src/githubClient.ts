@@ -22,17 +22,20 @@ export interface RemoteRepo {
 }
 
 export const getRemoteRepos = async (name: string) : Promise<SimplifiedWorkspace[]> => {
-  const result = await octokit.request('GET /search/repositories/', {
-    q: `org:${orgName} in:name ${name}`,
-  });
-  if (result?.data?.items.length > 0) {
-    return result.data.items.map((item: RemoteRepo) => ({
-          path: item.html_url,
-          name: item.name,
-          sshUrl: item.ssh_url,
-          defaultApp: CLIENT_LABNGUAGES.includes(item.language.toLocaleLowerCase()) && clientDefaultApp ? clientDefaultApp : defaultApp,
-          icon: 'https://github.com/github.png?size=32',
-    }));
+  if (name.length > 3) {
+    // https://docs.github.com/en/rest?apiVersion=2022-11-28
+    const result = await octokit.request('GET /search/repositories/', {
+      q: `${name} in:name in:readme org:${orgName}`,
+    });
+    if (result?.data?.items.length > 0) {
+      return result.data.items.map((item: RemoteRepo) => ({
+            path: item.html_url,
+            name: item.name,
+            sshUrl: item.ssh_url,
+            icon: 'https://github.com/github.png?size=32',
+            defaultApp: item.language && clientDefaultApp && CLIENT_LABNGUAGES.includes(item.language.toLocaleLowerCase()) ? clientDefaultApp : defaultApp,
+      }));
+    }
   }
   return [];
 }

@@ -24,10 +24,12 @@ export default function ListRepos() {
 
   useEffect(() => {
     const folders = getLocalRepos(kryCodePath).filter((item) => item.name.includes(searchText));
-    if (folders.length > 0) {
+    if (folders.length > 3) {
       setLocalRepos(folders);
     } else {
+      setLocalRepos(folders);
       getRemoteRepos(searchText).then((repos) => {
+        repos = repos.filter((item) => !folders.some((folder) => folder.name === item.name));
         setRemoteRepos(repos);
       });
     }
