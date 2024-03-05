@@ -50,8 +50,8 @@ export default function ListRepos() {
           icon={item.icon}
           actions={
             <ActionPanel>
-              <Action.OpenInBrowser title="Open in Github" url={`https://github.com/${orgName}/${item.name}`}/>
               <Action.Open title="Open in App" application={item.defaultApp} target={item.path} />
+              <Action.OpenInBrowser title="Open in Github" url={`https://github.com/${orgName}/${item.name}`}/>
               <Action.OpenInBrowser title="View PRs" url={`https://github.com/${orgName}/${item.name}/pulls`}/>
               <Action.Open title="Open with Default App" application={defaultApp} target={item.path} />
               <Action.Open title="Open with Client App" application={clientDefaultApp ? clientDefaultApp: defaultApp} target={item.path} />

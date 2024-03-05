@@ -8,9 +8,11 @@ const preferences: {
 } = getPreferenceValues();
 
 const SPELLING_MATCH_SUCCESS = 'Your spelling looks good!'
+const SPELLING_MATCH_FAIL = 'Dam not even I can work this word out';
 
 export default function Command() {
   const [searchText, setSearchText] = useState<string|undefined>("");
+  const [correctSpelling, setCorrectSpelling] = useState<string>("");
   const [results, setResults] = useState<Array<string>>([]);
 
   useEffect(() => {
@@ -36,9 +38,10 @@ export default function Command() {
           if (response.data[0].suggestions.length > 0) {
             setResults(response.data[0].suggestions);
           } else {
-            setResults([`Dam not even I can work this word out`]);
+            setResults([SPELLING_MATCH_FAIL]);
           }
         } else {
+          setCorrectSpelling(searchString)
           setResults([SPELLING_MATCH_SUCCESS]);
         }
       } catch (error) {
@@ -68,13 +71,14 @@ export default function Command() {
       throttle={true}
     >
       {results.map((result) => {
+        const clipboardText = results.length === 1 && result === SPELLING_MATCH_SUCCESS ? correctSpelling : result;
         return (
           <List.Item
             key={result}
             title={result}
             actions={
               <ActionPanel>
-                <Action.CopyToClipboard title="Copy" content={result} />
+                <Action.CopyToClipboard title="Copy" content={clipboardText} />
               </ActionPanel>
             }
           />
