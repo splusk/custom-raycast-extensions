@@ -24,3 +24,8 @@ export const useFiles = () => {
 export const onOpen = async(file: File) => {
   updateFileOnOpen(file).then((updatedFile) => saveFile(updatedFile, true));
 }
+
+export const resetRanking = async(file: File) => {
+  const updatedFile = { ...file, attributes: { ...file.attributes, rank: 0 } };
+  saveFile(updatedFile, true);
+}

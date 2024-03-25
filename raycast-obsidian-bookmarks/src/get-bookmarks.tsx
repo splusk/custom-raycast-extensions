@@ -1,5 +1,5 @@
 import { ActionPanel, List, Action, Icon, Color } from "@raycast/api";
-import { onOpen, useFiles } from "./utils/get/use-files";
+import { onOpen, useFiles, resetRanking } from "./utils/get/use-files";
 import SortDropdown, { SortMode, setSortMode, sortModes } from "./utils/get/sort";
 import openObsidianFile from "./utils/get/open-file";
 
@@ -28,6 +28,7 @@ export default function Command() {
                 <Action.CopyToClipboard title="Copy Link" content={file.attributes.source} />
                 <Action icon={{ source: Icon.Circle }} title="Fetch Bookmarks" onAction={() => fetchFiles()} />
                 <Action icon={{ source: Icon.Circle, tintColor: Color.Purple }} title="Open in Obsidian" onAction={() => openObsidianFile(file.fileName)} />
+                <Action icon={{ source: Icon.Circle }} title="Reset Ranking" onAction={() => resetRanking(file)} />
               </ActionPanel>
             }
           />    
