@@ -67,7 +67,7 @@ export default function Command() {
                     }
                   }}
                 />
-                <Action title="Copy Env Variables" onAction={async () => {
+                <Action title="Copy Env Variables" shortcut={{ modifiers: ["cmd", "shift"], key: "enter" }} onAction={async () => {
                     try {
                       const entry = (await parseCredentialsFile()).filter(entry => entry.profile === item)?.[0];
                       if (entry?.vars) {
@@ -79,7 +79,6 @@ export default function Command() {
                     }
                   }}
                 />
-                <Action.Paste content="api@raycast.com" />
                 <Action title="Run Command" shortcut={{ modifiers: ["opt"], key: "enter" }} onAction={async () => {
                     try {
                       const { text: hostName } = await Clipboard.read();

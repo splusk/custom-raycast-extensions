@@ -64,8 +64,9 @@ export const authenticate = (profile: string) => {
 }
 
 export const login = () => {
+    const loginCmd = `aws sso login`; // `yawsso login`;
     const cmd = execSync(
-        `yawsso login`,
+        loginCmd,
         { env: { ...process.env, PATH: "/opt/homebrew/bin:/usr/bin" }, encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 }
     );
     return cmd;

@@ -8,5 +8,6 @@ node_modules/
 
 # editors
 .idea
+.history
 
 raycast-scripts
