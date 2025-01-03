@@ -3,8 +3,7 @@ import { getPreferenceValues } from "@raycast/api";
 import fetch from "node-fetch";
 import { SimplifiedWorkspace } from ".";
 
-const CLIENT_LABNGUAGES = ["javascript", "typescript", "html", "swift"];
-const { orgName, authToken, defaultApp, clientDefaultApp } = getPreferenceValues()
+const { orgName, authToken } = getPreferenceValues()
 
 const octokit = new Octokit({
   auth: authToken,
@@ -33,7 +32,7 @@ export const getRemoteRepos = async (name: string) : Promise<SimplifiedWorkspace
             name: item.name,
             sshUrl: item.ssh_url,
             icon: 'https://github.com/github.png?size=32',
-            defaultApp: item.language && clientDefaultApp && CLIENT_LABNGUAGES.includes(item.language.toLocaleLowerCase()) ? clientDefaultApp : defaultApp,
+            openWith: `https://vscode.dev/github/${orgName}/${item.name}`
       }));
     }
   }

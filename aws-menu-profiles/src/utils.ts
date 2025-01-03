@@ -57,8 +57,15 @@ export const getMetaDetails = (metaDetails: string) => {
 }
 
 export const authenticate = (profile: string) => {
-    const cmd = `yawsso login --profile ${profile}`;
-    // const cmd = `aws sso login --profile=${profile}`;
+    // const cmd = `yawsso login --profile ${profile}`;
+    const cmd = `aws sso login --profile=${profile}`;
+    return execSync(
+        cmd,
+        { env: { ...process.env, PATH: "/opt/homebrew/bin:/usr/bin" }, encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 }
+    );
+}
+export const syncProfile = (profile: string) => {
+    const cmd = profile === 'default' ? `yawsso --default-only` : `yawsso -p ${profile}`;
     return execSync(
         cmd,
         { env: { ...process.env, PATH: "/opt/homebrew/bin:/usr/bin" }, encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 }
@@ -66,7 +73,7 @@ export const authenticate = (profile: string) => {
 }
 
 export const login = () => {
-    const loginCmd = `aws sso login`; // `yawsso login`;
+    const loginCmd = `aws sso login`;
     const cmd = execSync(
         loginCmd,
         { env: { ...process.env, PATH: "/opt/homebrew/bin:/usr/bin" }, encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 }

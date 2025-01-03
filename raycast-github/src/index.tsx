@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Action, ActionPanel, getPreferenceValues, List } from "@raycast/api";
+import { Action, ActionPanel, getPreferenceValues, List, Clipboard, getDefaultApplication, getApplications } from "@raycast/api";
 import { getLocalRepos } from "./fs";
 import { getRemoteRepos } from "./githubClient";
 
@@ -7,7 +7,7 @@ export interface SimplifiedWorkspace {
     path: string;
     name: string;
     icon: string;
-    defaultApp: string;
+    openWith: any
     sshUrl?: string;
 }
 
@@ -15,7 +15,7 @@ export default function ListRepos() {
   const [localRepos, setLocalRepos] = useState<SimplifiedWorkspace[]>([]);
   const [searchText, setSearchText] = useState("");
   const [remoteRepos, setRemoteRepos] = useState<SimplifiedWorkspace[]>([]);
-  const { kryCodePath, orgName, defaultApp, clientDefaultApp } = getPreferenceValues();
+  const { kryCodePath, orgName } = getPreferenceValues();
 
   useEffect(() => {
     const folders = getLocalRepos(kryCodePath);
@@ -34,7 +34,20 @@ export default function ListRepos() {
       });
     }
   }, [searchText]);
-  
+
+  const getCommitUrl = (repo: string) => {
+    const { text: hash } = Clipboard.read();
+    return `https://github.com/${orgName}/${repo}/commit/${hash}`
+  }
+
+  const actions = (item: SimplifiedWorkspace, isRemote: boolean) =>
+    (<ActionPanel>
+      {!isRemote ? <Action.Open title="Open in App" application={item.openWith} target={item.path} /> : <Action.OpenInBrowser title="Open in App" url={item.openWith} />}
+      <Action.OpenInBrowser title="Open in Github" url={`https://github.com/${orgName}/${item.name}`}/>
+      <Action.CopyToClipboard title="Copy Clone Url" content={isRemote ? `git clone ${item.sshUrl}` : `cd ${item.path}`}/>
+      <Action.OpenInBrowser title="View PRs" url={`https://github.com/${orgName}/${item.name}/pulls`}/>
+      <Action.OpenInBrowser title="View Commit" url={getCommitUrl(item.name)}/>
+    </ActionPanel>);
 
   return (
     <List
@@ -48,15 +61,7 @@ export default function ListRepos() {
           key={item.name}
           title={item.name}
           icon={item.icon}
-          actions={
-            <ActionPanel>
-              <Action.Open title="Open in App" application={item.defaultApp} target={item.path} />
-              <Action.OpenInBrowser title="Open in Github" url={`https://github.com/${orgName}/${item.name}`}/>
-              <Action.OpenInBrowser title="View PRs" url={`https://github.com/${orgName}/${item.name}/pulls`}/>
-              <Action.Open title="Open with Default App" application={defaultApp} target={item.path} />
-              <Action.Open title="Open with Client App" application={clientDefaultApp ? clientDefaultApp: defaultApp} target={item.path} />
-            </ActionPanel>
-          }
+          actions={actions(item, false)}
         />
       ))}
       {remoteRepos.map((item) => (
@@ -64,13 +69,7 @@ export default function ListRepos() {
           key={item.name}
           title={item.name}
           icon={item.icon}
-          actions={
-            <ActionPanel>
-              <Action.OpenInBrowser title="Open in Github" url={item.path}/>
-              <Action.CopyToClipboard title="Copy Clone Url" content={item.sshUrl || item.path}/>
-              <Action.OpenInBrowser title="View PRs" url={`${item.path}/pulls`}/>
-            </ActionPanel>
-          }
+          actions={actions(item, true)}
         />
       ))}
     </List>

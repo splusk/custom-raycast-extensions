@@ -12,17 +12,16 @@ export const getLocalRepos = (folderPath: string): SimplifiedWorkspace[] => {
     const nodes = fs.readdirSync(folderPath);
 
     if (nodes) {
-      nodes.forEach((node: string) => {
+      nodes.forEach(async (node: string) => {
         const childFolderPath = path.join(folderPath, node);
         const isDir = fs.statSync(childFolderPath).isDirectory();
-
         if (isDir) {
-          const hasPackageJson = isFileExists(path.join(childFolderPath, 'package.json'));
+          const hasPackageJson = isFile(path.join(childFolderPath, 'package.json'));
           dirs.push({
             path: childFolderPath,
             name: node,
             icon: `https://github.com/${orgName}.png?size=32`,
-            defaultApp: hasPackageJson && clientDefaultApp ? clientDefaultApp : defaultApp
+            openWith: hasPackageJson && clientDefaultApp ? clientDefaultApp : defaultApp
           });
         }
       });
@@ -37,7 +36,7 @@ export const getLocalRepos = (folderPath: string): SimplifiedWorkspace[] => {
 /**
  * Check a file is exist or not
  */
-export const isFileExists = (filePath: string) => {
+export const isFile = (filePath: string) => {
   try {
     fs.accessSync(filePath);
     return true;

@@ -127,3 +127,9 @@ export const saveFile = async(file: File, isUpdate = false): Promise<File> => {
     return file;
   }
 }
+
+export const moveFile = async(file: File) => {
+  const bookmarkpath = await getOrCreateBookmarksPath();
+  const archivePath = path.join(bookmarkpath, "archive/", file.fileName);
+  await fs.rename(file.fullPath, archivePath);
+}

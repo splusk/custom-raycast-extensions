@@ -29,6 +29,26 @@
     "prettier": "^3.2.5",
     "typescript": "^5.4.5"
   },
+  "preferences": [
+    {
+      "name": "aiProgram",
+      "title": "Program Name",
+      "label": "Program Name",
+      "description": "The name of the program to run",
+      "type": "textfield",
+      "required": true,
+      "default": ""
+    },
+    {
+      "name": "executablePath",
+      "title": "Path to executable",
+      "label": "Path to executable",
+      "description": "Path to executable",
+      "type": "textfield",
+      "required": true,
+      "default": "/usr/local/bin/"
+    }
+  ],
   "scripts": {
     "build": "ray build -e dist",
     "dev": "ray develop",

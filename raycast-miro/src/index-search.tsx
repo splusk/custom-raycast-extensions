@@ -41,7 +41,7 @@ export default function Command() {
                 <>
                   <Action.OpenInBrowser title="Open in Browser" url={item.viewLink} />
                   <Action title="Open in App" onAction={() => openInMiroApp(item.viewLink)} />
-                  <Action.CopyToClipboard title="Copy Link" content={item.viewLink} />
+                  <Action.CopyToClipboard title="Copy Link" shortcut={{ modifiers: ["cmd", "shift"], key: "enter" }} content={item.viewLink} />
                 </>
                 )}
               <Action title="Reload" onAction={() => revalidate()} />

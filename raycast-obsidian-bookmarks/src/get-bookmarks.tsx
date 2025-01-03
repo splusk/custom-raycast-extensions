@@ -1,5 +1,5 @@
 import { ActionPanel, List, Action, Icon, Color } from "@raycast/api";
-import { onOpen, useFiles, resetRanking } from "./utils/get/use-files";
+import { onOpen, useFiles, resetRanking, archiveBookmark } from "./utils/get/use-files";
 import SortDropdown, { SortMode, setSortMode, sortModes } from "./utils/get/sort";
 import openObsidianFile from "./utils/get/open-file";
 import LinkForm from "./save-bookmark";
@@ -33,6 +33,11 @@ export default function Command() {
                   title="Save Bookmark" 
                   onAction={() => setShowSaveModal(!showSaveModal)} 
                   shortcut={{ modifiers: ["cmd", "shift"], key: "s" }} 
+                />
+                <Action icon={{ source: Icon.Move }} 
+                  title="Arhive Bookmark"
+                  onAction={() => archiveBookmark(file)} 
+                  shortcut={{ modifiers: ["cmd", "shift"], key: "m" }} 
                 />
                 <Action icon={{ source: Icon.Circle }} title="Fetch Bookmarks" onAction={() => fetchFiles()} />
                 <Action icon={{ source: Icon.Circle, tintColor: Color.Purple }} title="Open in Obsidian" onAction={() => openObsidianFile(file.fileName)} />
