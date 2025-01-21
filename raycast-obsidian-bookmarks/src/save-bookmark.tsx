@@ -1,11 +1,11 @@
-import { Action, ActionPanel, closeMainWindow, Form, popToRoot, showToast, Toast } from "@raycast/api";
+import { Action, ActionPanel, BrowserExtension, closeMainWindow, Form, popToRoot, showToast, Toast } from "@raycast/api";
 import { useEffect, useRef } from "react";
 import useLinkForm from "./utils/save/use-link-form";
 import { asFile as convertToFile, saveFile } from "./utils/save/save-file";
 import { copyUrl } from "./utils/save/copy-url";
 import { Link } from "./utils/save/use-frontmost-link";
 
-export default function LinkForm() {
+export const SaveForm = ({ tab }: { tab?: BrowserExtension.Tab }) => {
   const { values, onChange, loading: linkLoading } = useLinkForm();
   const toastRef = useRef<Toast>();
   const loadingRef = useRef(linkLoading);
@@ -41,7 +41,10 @@ export default function LinkForm() {
                 <Action.SubmitForm
                   title="Save Bookmark"
                   onSubmit={async (values) => {
-                    const file = await convertToFile(values as Link);
+                    const file = await convertToFile({
+                      ...values,
+                      url: tab?.url || values.url,
+                    } as Link);
                     const savedFile = await saveFile(file);
                     await Promise.allSettled([copyUrl(savedFile), showToast({
                       title: "Linked Copied",
@@ -54,8 +57,8 @@ export default function LinkForm() {
               </ActionPanel>
       }
     >
-      <Form.TextField id="title" title="Title" value={values.title} onChange={onChange("title")} />
-      <Form.TextField id="url" title="URL" value={values.url} onChange={onChange("url")} />
+      <Form.TextField id="title" title="Title" value={tab?.title || values.title} onChange={onChange("title")} />
+      <Form.TextField id="url" title="URL" value={tab?.url || values.url} onChange={onChange("url")} />
     </Form>
   );
 }

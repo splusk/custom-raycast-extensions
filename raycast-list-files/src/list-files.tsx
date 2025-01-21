@@ -34,10 +34,12 @@ export default function Command() {
     }
   }
 
+  const baseFolders = directories.split(',');
+
   if (!selectedFolder) {
     return (
       <List>
-        {directories.split(',').map((directory: string) => (
+        {baseFolders.map((directory: string) => (
           <List.Item
             key={directory}
             title={directory}
@@ -71,7 +73,10 @@ export default function Command() {
                 <Action title='Open' icon={Icon.Finder} onAction={() => item.isDir ? setSelectedFolder(fullPath) : openFile(fullPath)} />
                 <Action title="Copy" icon={Icon.CopyClipboard} onAction={() => copyFile(fullPath)}/>
                 <Action.Open title="Open in Default Application" shortcut={{ modifiers: ["cmd", "shift"], key: "enter" }} target={fullPath} />
-                <Action title="Go Back" shortcut={{ modifiers: ["cmd", "shift"], key: "arrowUp" }} onAction={() => setSelectedFolder(path.dirname(selectedFolder))} />
+                <Action title="Go Back" shortcut={{ modifiers: ["cmd", "shift"], key: "arrowUp" }} onAction={() => {
+                  const folder = baseFolders.some((dir) => dir === selectedFolder) ? null : path.dirname(selectedFolder);
+                  setSelectedFolder(folder);
+                }} />
               </ActionPanel>
             }
             detail={
