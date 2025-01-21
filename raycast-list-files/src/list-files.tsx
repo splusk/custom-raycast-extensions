@@ -12,6 +12,7 @@ export default function Command() {
   useEffect(() => {
     const _getFiles = async () => {
       if (selectedFolder) {
+        console.log(`Getting files for ${selectedFolder}`);
         const f = await getFiles(selectedFolder);
         setFiles(f);
       }
@@ -46,7 +47,7 @@ export default function Command() {
                 <Action
                   title="Select"
                   icon={Icon.Finder}
-                  onAction={() => setSelectedFolder(directory)}
+                  onAction={() => setSelectedFolder(directory.trim())}
                 />
               </ActionPanel>
             }
