@@ -1,0 +1,100 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "pritunl-connect-client",
+  "title": "Pritunl VPN Client",
+  "description": "Connect and check status of VPN connection from Raycast",
+  "icon": "command-icon.png",
+  "author": "splusk",
+  "owner": "kry-livi",
+  "contributors": [
+    "jberglinds"
+  ],
+  "license": "MIT",
+  "commands": [
+    {
+      "name": "index",
+      "title": "Pritunl VPN",
+      "description": "Pritunl VPN Client",
+      "mode": "no-view",
+      "interval": "1m",
+      "arguments": [
+        {
+          "name": "pinCode",
+          "placeholder": "Pin Code",
+          "required": false,
+          "type": "password"
+        }
+      ]
+    }
+  ],
+  "preferences": [
+    {
+      "name": "autoDismiss",
+      "label": "Dismiss window on action",
+      "description": "Clears search and closes window after invoking action, reports status via HUD.",
+      "type": "checkbox",
+      "required": false,
+      "default": false
+    },
+    {
+      "name": "promptBeforeDisconnecting",
+      "label": "Prompt before disconnecting",
+      "description": "Shows a confirmation dialog before disconnecting.",
+      "type": "checkbox",
+      "required": false,
+      "default": false
+    },
+    {
+      "name": "profileUri",
+      "title": "Profile URI",
+      "description": "The URI for downloading the profiles.",
+      "type": "textfield",
+      "placeholder": "pritunl://url",
+      "required": true
+    },
+    {
+      "name": "pinCode",
+      "title": "Pin code",
+      "description": "Pin code",
+      "type": "password",
+      "required": false
+    },
+    {
+      "name": "mfaKey",
+      "title": "2-Step Authentication Key",
+      "description": "Key for generating 2FA codes.",
+      "type": "password",
+      "required": true
+    },
+    {
+      "name": "profileName",
+      "title": "Profile Name",
+      "description": "The profile to connect to.",
+      "type": "textfield",
+      "required": true,
+      "default": "KRYVPNDev"
+    }
+  ],
+  "dependencies": {
+    "@raycast/api": "^1.30.3",
+    "node-2fa": "^2.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "~16.10.0",
+    "@types/react": "^17.0.28",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/parser": "^5.0.0",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "prettier": "^2.5.1",
+    "react-devtools": "^4.19.2",
+    "typescript": "^4.4.3"
+  },
+  "scripts": {
+    "build": "ray build -e dist",
+    "dev": "ray develop",
+    "fix-lint": "ray lint --fix",
+    "lint": "ray lint",
+    "publish": "ray publish"
+  }
+}

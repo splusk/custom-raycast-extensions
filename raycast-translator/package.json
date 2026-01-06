@@ -1,0 +1,66 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "translator",
+  "title": "Translator",
+  "description": "Translate to your language",
+  "icon": "google-translate.png",
+  "author": "splusk",
+  "license": "MIT",
+  "commands": [
+    {
+      "name": "index",
+      "title": "Translator",
+      "description": "Translate to your language",
+      "mode": "view"
+    }
+  ],
+  "preferences": [
+    {
+      "name": "from",
+      "type": "dropdown",
+      "required": true,
+      "title": "From Language",
+      "description": "From Language",
+      "default": "sv",
+      "data": [
+        {
+          "title": "🇸🇪 Swedish",
+          "value": "sv"
+        }
+      ]
+    },
+    {
+      "name": "to",
+      "type": "dropdown",
+      "required": true,
+      "title": "To Language",
+      "description": "To Language",
+      "default": "en",
+      "data": [
+        {
+          "title": "🇬🇧 English",
+          "value": "en"
+        }
+      ]
+    }
+  ],
+  "dependencies": {
+    "@raycast/api": "^1.64.4",
+    "@iamtraction/google-translate": "^2.0.1"
+  },
+  "devDependencies": {
+    "@raycast/eslint-config": "^1.0.6",
+    "@types/node": "20.8.10",
+    "@types/react": "18.2.27",
+    "eslint": "^8.51.0",
+    "prettier": "^3.0.3",
+    "typescript": "^5.2.2"
+  },
+  "scripts": {
+    "build": "ray build -e dist",
+    "dev": "ray develop",
+    "fix-lint": "ray lint --fix",
+    "lint": "ray lint",
+    "publish": "npx @raycast/api@latest publish"
+  }
+}

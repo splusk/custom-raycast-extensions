@@ -1,0 +1,101 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "obsidian-bookmarks",
+  "title": "Obsidian Bookmarks",
+  "description": "Raycast Obsidian Bookmark Manager",
+  "icon": "obsidian-bookmarks.png",
+  "author": "splusk",
+  "license": "MIT",
+  "commands": [
+    {
+      "name": "get-bookmarks",
+      "title": "Show Obsidian Bookmarks",
+      "description": "Show Obsidian Bookmarks",
+      "mode": "view"
+    },
+    {
+      "name": "save-bookmark",
+      "title": "Save Obsidian Bookmark",
+      "description": "Save Obsidian Bookmark",
+      "mode": "view"
+    }
+  ],
+  "preferences": [
+    {
+      "name": "vaultPath",
+      "title": "Vault Path",
+      "label": "Path of Vaults",
+      "description": "Path to Folder containing all Obsidian vaults.",
+      "type": "textfield",
+      "required": true,
+      "default": ""
+    },
+    {
+      "name": "vaultNames",
+      "title": "Vault Name(s)",
+      "label": "Vault Name(s)",
+      "description": "Comma separated string of vault names",
+      "type": "textfield",
+      "required": true,
+      "default": ""
+    },
+    {
+      "name": "bookmarksPath",
+      "title": "Bookmarks Folder",
+      "label": "Bookmarks Folder",
+      "description": "Folder name containing all obsidian bookmarks inside the Vault.",
+      "type": "textfield",
+      "required": true,
+      "default": "Bookmarks"
+    },
+    {
+      "name": "sortOrder",
+      "title": "Sort Order",
+      "label": "Sort Order",
+      "description": "Sort Order of saved bookmarks.",
+      "type": "dropdown",
+      "required": true,
+      "default": "byTitle",
+      "data": [
+        {
+          "title": "Title",
+          "value": "title"
+        },
+        {
+          "title": "Last Used",
+          "value": "lastUsed"
+        },
+        {
+          "title": "Popularity",
+          "value": "popularity"
+        }
+      ]
+    }
+  ],
+  "dependencies": {
+    "@raycast/api": "^1.88.4",
+    "@raycast/utils": "^1.17.0",
+    "axios": "^1.7.9",
+    "front-matter": "^4.0.2",
+    "fuse.js": "^6.6.0",
+    "run-applescript": "^6.0.0",
+    "run-jxa": "^3.0.0",
+    "slugify": "^1.6.5",
+    "ts-dedent": "^2.2.0"
+  },
+  "devDependencies": {
+    "@raycast/eslint-config": "^1.0.6",
+    "@types/node": "20.8.10",
+    "@types/react": "18.2.27",
+    "eslint": "^8.51.0",
+    "prettier": "^3.0.3",
+    "typescript": "^5.2.2"
+  },
+  "scripts": {
+    "build": "ray build -e dist",
+    "dev": "ray develop",
+    "fix-lint": "ray lint --fix",
+    "lint": "ray lint",
+    "publish": "npx @raycast/api@latest publish"
+  }
+}
