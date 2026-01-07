@@ -34,13 +34,14 @@ const getFileName = async(filename: string): Promise<string> => {
 }
 
 export const saveToObsidian = async(file: File): Promise<string> => {
+    // tags: [${file.attributes.tags?.map(t => t).join(',')}]
     const template = dedent`
     ---
     title: ${JSON.stringify(file.attributes.title)}
     created: ${JSON.stringify(file.attributes.created)}
     source: ${JSON.stringify(file.attributes.source)}
     publisher: ${JSON.stringify(file.attributes.publisher)}
-    tags: [${file.attributes.tags.map(t => t).join(',')}]
+    tags: [${file.attributes.tags?.map(t => t)?.join(',')}]
     rank: ${JSON.stringify(file.attributes.rank)}
     ---
 
