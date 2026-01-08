@@ -1,6 +1,6 @@
-import { ActionPanel, List, Action, Icon, Color, BrowserExtension, closeMainWindow, getPreferenceValues } from "@raycast/api";
+import { ActionPanel, List, Action, Icon, Color, BrowserExtension, closeMainWindow } from "@raycast/api";
 import { onOpen, useFiles, resetRanking, archiveBookmark, useSearchFiles } from "./utils/get/use-files";
-import SortDropdown, { SortMode, setSortMode, getSortMode, SORT_MODES, sortModes, VaultMode, getVaultModes } from "./utils/get/sort";
+import SortDropdown, { SortMode, setSortMode, getSortMode, SORT_MODES, sortModes, getVaultModes } from "./utils/get/sort";
 import { getChromeTabsSorted } from "./utils/get/get-tabs";
 import openObsidianFile from "./utils/get/open-file";
 import { SaveForm } from "./save-bookmark";
@@ -36,25 +36,12 @@ export default function Command() {
   const handleSearchChange = (text: string) => {
     setSearchText(text);
     fetchFiles(text);
-    getChromeTabs(text);
+    getBrowserTabs(text);
   };
 
   const saveTabAsBookmark = (tab: BrowserExtension.Tab) => {
 	  setShowSaveModal(!showSaveModal);
 	  setTabToSave(tab);
-  }
-
-  const getChromeTabs = async(text?: string) => {
-    const result = await getChromeTabsSorted(text);
-    setChromeTabs(result);
-  }
-
-  const getActiveChromeTab = async() => {
-    const result = await getChromeTabsSorted();
-    if (result) {
-      return result.find(tab => tab.active);
-    }
-    return undefined;
   }
 
   const getIcon = (file: File, defaultIcon?: Icon) => {
@@ -66,7 +53,12 @@ export default function Command() {
     return defaultIcon || Icon.Bookmark;
   }
 
-  const focusChromeTab = async (tab: BrowserExtension.Tab) => {
+  const getBrowserTabs = async(text?: string) => {
+    const result = await getChromeTabsSorted(text);
+    setChromeTabs(result);
+  }
+
+  const focusBrowserTab = async (tab: BrowserExtension.Tab) => {
     const url = tab.url;
     await runAppleScript(`
       on run argv
@@ -93,7 +85,7 @@ export default function Command() {
   const showSearchItems = searchText.length > 3 && searchData && chromeTabs.length < 3 && (savedBookmarks?.length ?? 0) < 3;
 
   useEffect(() => {
-    getChromeTabs();
+    getBrowserTabs();
     getSortMode().then((mode) => {
       setCurrentSortMode(mode as SortMode);
     });
@@ -120,7 +112,7 @@ export default function Command() {
             accessories={[{ text: 'Browser' }]}
             actions={
               <ActionPanel>
-                <Action title="Focus" icon={{ source: Icon.Globe }} onAction={() => focusChromeTab(tab)} />
+                <Action title="Focus" icon={{ source: Icon.Globe }} onAction={() => focusBrowserTab(tab)} />
                 <Action title={`Save as Bookmark (${vaultMode})`} icon={{ source: Icon.SaveDocument }}
                   shortcut={{ modifiers: ["cmd", "shift"], key: "s" }}
                   onAction={() => saveTabAsBookmark(tab)}
