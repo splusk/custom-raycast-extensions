@@ -11,7 +11,7 @@ const URLS_TO_EXCLUDE = [
   "https://outlook.office.com/calendar/"
 ];
 
-export const getChromeTabsSorted = async(searchText?: string) => {
+export const getBrowserTabsSorted = async(searchText?: string) => {
   try {
     const openTabs = (await BrowserExtension.getTabs()).filter(tab => {
       const url = tab.url || ""

@@ -1,7 +1,7 @@
-import { ActionPanel, List, Action, Icon, Color, BrowserExtension, closeMainWindow } from "@raycast/api";
+import { ActionPanel, List, Action, Icon, Color, BrowserExtension, closeMainWindow, getPreferenceValues } from "@raycast/api";
 import { onOpen, useFiles, resetRanking, archiveBookmark, useSearchFiles } from "./utils/get/use-files";
 import SortDropdown, { SortMode, setSortMode, getSortMode, SORT_MODES, sortModes, getVaultModes } from "./utils/get/sort";
-import { getChromeTabsSorted } from "./utils/get/get-tabs";
+import { getBrowserTabsSorted } from "./utils/get/get-tabs";
 import openObsidianFile from "./utils/get/open-file";
 import { SaveForm } from "./save-bookmark";
 import { useEffect, useState } from "react";
@@ -9,6 +9,27 @@ import { runAppleScript } from "@raycast/utils";
 import { File } from "./utils/files";
 import { useVaultMode } from "./utils/get/use-vault-mode";
 
+const getVaultUrlPatterns = (): Record<string, string[]> => {
+  const { vaultUrlPatterns } = getPreferenceValues<{ vaultUrlPatterns?: string }>();
+
+  if (!vaultUrlPatterns || vaultUrlPatterns.trim() === '') {
+    return {};
+  }
+
+  const patterns: Record<string, string[]> = {};
+
+  // Split by semicolon
+  const entries = vaultUrlPatterns.split(';').map(entry => entry.trim()).filter(entry => entry.length > 0);
+
+  for (const entry of entries) {
+    const [vaultName, urlsString] = entry.split(':').map(part => part.trim());
+    if (vaultName && urlsString) {
+      patterns[vaultName] = urlsString.split(',').map(url => url.trim()).filter(url => url.length > 0);
+    }
+  }
+
+  return patterns;
+}
 
 export default function Command() {
   const { vaultMode, updateVaultMode } = useVaultMode();
@@ -17,7 +38,7 @@ export default function Command() {
   const [ searchText, setSearchText ] = useState("");
   const [ showSaveModal, setShowSaveModal ] = useState(false);
   const [ currentSortMode, setCurrentSortMode ] = useState<SortMode>(SORT_MODES.ALL);
-  const [ chromeTabs, setChromeTabs ] = useState<BrowserExtension.Tab[]>([]);
+  const [ browserTabs, setBrowserTabs ] = useState<BrowserExtension.Tab[]>([]);
   const [ tabToSave, setTabToSave ] = useState<BrowserExtension.Tab|undefined>(undefined);
   const vaultModesList = getVaultModes();
 
@@ -25,6 +46,7 @@ export default function Command() {
      // Check if this is a vault mode change or sort mode change
      if (vaultModesList.includes(newValue)) {
        await updateVaultMode(newValue);
+       await getBrowserTabsSorted(searchText);
        fetchFiles(searchText, true);
      } else {
        setCurrentSortMode(newValue as SortMode);
@@ -54,8 +76,8 @@ export default function Command() {
   }
 
   const getBrowserTabs = async(text?: string) => {
-    const result = await getChromeTabsSorted(text);
-    setChromeTabs(result);
+    const result = await getBrowserTabsSorted(text);
+    setBrowserTabs(result);
   }
 
   const focusBrowserTab = async (tab: BrowserExtension.Tab) => {
@@ -82,7 +104,7 @@ export default function Command() {
     closeMainWindow();
   };
 
-  const showSearchItems = searchText.length > 3 && searchData && chromeTabs.length < 3 && (savedBookmarks?.length ?? 0) < 3;
+  const showSearchItems = searchText.length > 3 && searchData && browserTabs.length < 3 && (savedBookmarks?.length ?? 0) < 3;
 
   useEffect(() => {
     getBrowserTabs();
@@ -90,6 +112,42 @@ export default function Command() {
       setCurrentSortMode(mode as SortMode);
     });
   }, []);
+
+  useEffect(() => {
+    const vaultUrlPatterns = getVaultUrlPatterns();
+    const matchCounts: Record<string, number> = {};
+
+    // Initialize counts
+    for (const key of Object.keys(vaultUrlPatterns)) {
+      matchCounts[key] = 0;
+    }
+
+    // Count matches for each key
+    for (const tab of browserTabs) {
+      for (const [key, patterns] of Object.entries(vaultUrlPatterns)) {
+        if (patterns.some(pattern => tab.url.includes(pattern))) {
+          matchCounts[key]++;
+        }
+      }
+    }
+
+    // Find the key with the most matches
+    let maxMatches = 0;
+    let selectedKey: string | null = null;
+
+    for (const [key, count] of Object.entries(matchCounts)) {
+      if (count > maxMatches) {
+        maxMatches = count;
+        selectedKey = key;
+      }
+    }
+
+    // Update vault mode if we found matches
+    if (selectedKey && maxMatches > 0) {
+      updateVaultMode(selectedKey);
+      fetchFiles(searchText, true);
+    }
+  }, [browserTabs]);
 
   if (showSaveModal) {
     return <SaveForm tab={tabToSave} />;
@@ -101,10 +159,10 @@ export default function Command() {
       filtering={false}
       searchText={searchText}
       onSearchTextChange={handleSearchChange}
-      searchBarAccessory={<SortDropdown sortModes={sortModes} vaultModes={vaultModesList} onChange={onChange} />}
+      searchBarAccessory={<SortDropdown sortModes={sortModes} vaultModes={vaultModesList} onChange={onChange} value={vaultMode} />}
       >
       <>
-        {(currentSortMode === SORT_MODES.CHROME || currentSortMode === SORT_MODES.ALL) && chromeTabs?.map((tab, index) => (
+        {(currentSortMode === SORT_MODES.CHROME || currentSortMode === SORT_MODES.ALL) && browserTabs?.map((tab, index) => (
           <List.Item
             key={`${tab.id}-${index}`}
             icon={tab.favicon}

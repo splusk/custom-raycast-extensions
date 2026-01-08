@@ -70,6 +70,15 @@
           "value": "popularity"
         }
       ]
+    },
+    {
+      "name": "vaultUrlPatterns",
+      "title": "Vault URL Patterns",
+      "label": "Vault URL Patterns",
+      "description": "Map vaults to URL patterns for auto-selection. Format: VaultName:url1,url2;VaultName2:url3,url4. Example: Work:github.com,app.datadoghq.eu;Personal:linkedin.com,mail.google.com/",
+      "type": "textfield",
+      "required": false,
+      "default": ""
     }
   ],
   "dependencies": {

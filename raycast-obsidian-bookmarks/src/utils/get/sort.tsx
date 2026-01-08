@@ -23,8 +23,9 @@ export default function SortDropdown(props: {
   sortModes: SortMode[];
   vaultModes: VaultMode[];
   onChange: (newValue: string) => void;
+  value?: string;
 }) {
-  const { sortModes, vaultModes, onChange } = props;
+  const { sortModes, vaultModes, onChange, value } = props;
 
   const buildTitle = (mode: string) => {
     return mode
@@ -37,6 +38,7 @@ export default function SortDropdown(props: {
     <List.Dropdown
       tooltip="Sort By"
       storeValue={true}
+      value={value}
       onChange={(newValue) => {
         onChange(newValue);
       }}
