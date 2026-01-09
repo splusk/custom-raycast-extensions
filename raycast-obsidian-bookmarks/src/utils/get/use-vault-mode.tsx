@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getVaultMode, setVaultMode, VaultMode, getVaultModes } from "./sort";
+import { getVaultMode, setVaultMode, VaultMode } from "./sort";
 
 export const useVaultMode = () => {
   const [vaultMode, setVaultModeState] = useState<VaultMode>('');

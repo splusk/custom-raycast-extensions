@@ -114,7 +114,11 @@ export default function Command() {
   }, []);
 
   useEffect(() => {
+    if (browserTabs.length === 0) return;
+
     const vaultUrlPatterns = getVaultUrlPatterns();
+    if (Object.keys(vaultUrlPatterns).length === 0) return;
+    
     const matchCounts: Record<string, number> = {};
 
     // Initialize counts
