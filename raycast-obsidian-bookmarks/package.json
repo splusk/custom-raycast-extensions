@@ -55,7 +55,7 @@
       "description": "Sort Order of saved bookmarks.",
       "type": "dropdown",
       "required": true,
-      "default": "byTitle",
+      "default": "all",
       "data": [
         {
           "title": "Title",

@@ -92,13 +92,14 @@ const loadData = async (fileName: string) => {
     const raw = await readFile(filePath, 'utf8');
     return JSON.parse(raw);
   } catch (error) {
-    console.error(`Error reading file ${filePath}:`, error);
+    console.info(`Could not find file ${filePath}:`);
     return null;
   }
 }
 
 const getInternalBookmarks = async () => {
   const data = await loadData('bookmarks.json');
+  if (!data) return [];
   return data?.bookmarks?.map((bookmark: FrontMatter) => ({
     attributes: {
       ...bookmark

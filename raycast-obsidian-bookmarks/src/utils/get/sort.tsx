@@ -90,7 +90,7 @@ export const getCurrentVaultName = async (): Promise<string> => {
   return await getVaultMode();
 }
 
-export const sortFilesByPref = async (files: File[]) => {
+export const sortFilesByPref = async (files: File[] = []) => {
   const sortMode = await getSortMode();
   switch (sortMode) {
     case "all":
@@ -106,11 +106,12 @@ export const sortFilesByPref = async (files: File[]) => {
 
 const sortByLastViewed = (files: File[]) => {
   return Promise.resolve(files.sort((a, b) => {
-    const viewedLastA = a.attributes.updated || a.attributes.created || a.attributes.saved;
+    const viewedLastA = a.attributes?.updated || a.attributes?.created || a.attributes?.saved;
     const viewedLastADate = viewedLastA ? new Date(viewedLastA) : new Date();
-    const viewedLastB = b.attributes.updated || b.attributes.created || b.attributes.saved;
+    const viewedLastB = b.attributes?.updated || b.attributes?.created || b.attributes?.saved;
     const viewedLastBDate = viewedLastB ? new Date(viewedLastB) : new Date();
-    return viewedLastBDate.getTime() - viewedLastADate.getTime();
+    const diff = viewedLastBDate.getTime() - viewedLastADate.getTime();
+    return diff;
   }));
 };
 const sortByRank = async (files: File[]) => {
